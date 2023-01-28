@@ -58,6 +58,7 @@ namespace AutoStartup
         public bool Loaded { get; set; }
         public bool StopFlag { get; set; }
         public bool TestFlag { get; set; }
+        public string ConfigPath { get; set; }
 
         private void StartupList_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -100,7 +101,7 @@ namespace AutoStartup
                 Arg = ProgramArg.Text,
                 Enabled = ProgramEnabled.Checked
             });
-            File.WriteAllText("Config.json", JsonConvert.SerializeObject(StartUpItems, Formatting.Indented));
+            File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(StartUpItems, Formatting.Indented));
             RefreshList();
         }
 
@@ -148,7 +149,7 @@ namespace AutoStartup
             item.Path = ProgramPath.Text;
             item.Arg = ProgramArg.Text;
             item.Enabled = ProgramEnabled.Checked;
-            File.WriteAllText("Config.json", JsonConvert.SerializeObject(StartUpItems, Formatting.Indented));
+            File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(StartUpItems, Formatting.Indented));
             RefreshList();
         }
 
@@ -164,7 +165,7 @@ namespace AutoStartup
                 return;
             }
             StartUpItems.RemoveAt(StartupList.SelectedIndices[0]);
-            File.WriteAllText("Config.json", JsonConvert.SerializeObject(StartUpItems, Formatting.Indented));
+            File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(StartUpItems, Formatting.Indented));
             RefreshList();
         }
 
@@ -211,9 +212,10 @@ namespace AutoStartup
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            if (File.Exists("Config.json"))
+            ConfigPath = AppDomain.CurrentDomain.BaseDirectory + "Config.json";
+            if (File.Exists(ConfigPath))
             {
-                StartUpItems = JsonConvert.DeserializeObject<List<StartUpItem>>(File.ReadAllText("Config.json"));
+                StartUpItems = JsonConvert.DeserializeObject<List<StartUpItem>>(File.ReadAllText(ConfigPath));
             }
             if (StartUpItems == null)
             {
@@ -273,7 +275,7 @@ namespace AutoStartup
                 CurrentStatus = $"启动程序 {item.Name} 中...";
                 try
                 {
-                    Process.Start(new ProcessStartInfo { FileName = item.Path, Arguments = item.Arg, UseShellExecute = true });
+                    Process.Start(new ProcessStartInfo { FileName = item.Path, WorkingDirectory = new FileInfo(item.Path).DirectoryName, Arguments = item.Arg, UseShellExecute = true });
                 }
                 catch (Exception e)
                 {
