@@ -27,6 +27,18 @@ namespace AutoStartup
             }
         }
         public Config ConfigItem { get; set; }
+        public int ProgramDelay
+        {
+            get
+            {
+                return int.TryParse(DelayValue.Text, out int value) ? value : 0;
+            }
+
+            set
+            {
+                DelayValue.Text = value.ToString();
+            }
+        }
 
         public class StartUpItem
         {
@@ -35,6 +47,7 @@ namespace AutoStartup
             public string Arg { get; set; }
             public bool Enabled { get; set; }
             public bool HideWindow { get; set; }
+            public int Delay { get; set; }
         }
 
         public MainForm(bool v)
@@ -103,7 +116,8 @@ namespace AutoStartup
                 Path = ProgramPath.Text,
                 Arg = ProgramArg.Text,
                 Enabled = ProgramEnabled.Checked,
-                HideWindow = HideWindowSelector.Checked
+                HideWindow = HideWindowSelector.Checked,
+                Delay = ProgramDelay
             });
             File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(ConfigItem, Formatting.Indented));
             RefreshList();
@@ -123,6 +137,7 @@ namespace AutoStartup
                 viewItem.SubItems.Add(item.HideWindow ? "是" : "否");
                 viewItem.SubItems.Add(item.Name);
                 viewItem.SubItems.Add(item.Path);
+                viewItem.SubItems.Add(item.Delay.ToString());
                 viewItem.SubItems.Add(item.Arg);
                 StartupList.Items.Add(viewItem);
             }
@@ -153,6 +168,7 @@ namespace AutoStartup
             item.Name = ProgramName.Text;
             item.Path = ProgramPath.Text;
             item.Arg = ProgramArg.Text;
+            item.Delay = ProgramDelay;
             item.Enabled = ProgramEnabled.Checked;
             item.HideWindow = HideWindowSelector.Checked;
             File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(ConfigItem, Formatting.Indented));
@@ -248,7 +264,8 @@ namespace AutoStartup
             {
                 ProgramName.Text = item.SubItems[2].Text;
                 ProgramPath.Text = item.SubItems[3].Text;
-                ProgramArg.Text = item.SubItems[4].Text;
+                ProgramArg.Text = item.SubItems[5].Text;
+                DelayValue.Text = item.SubItems[4].Text;
                 ProgramEnabled.Checked = item.SubItems[0].Text == "是";
                 HideWindowSelector.Checked = item.SubItems[1].Text == "是";
             }
@@ -285,6 +302,19 @@ namespace AutoStartup
                 CurrentStatus = $"启动程序 {item.Name} 中...";
                 try
                 {
+                    int delay = item.Delay / 100;
+                    for (int i = 0; i < delay; i++)
+                    {
+                        CurrentStatus = $"延时{((double)delay - i) / 10:f2}s...";
+                        if (StopFlag)
+                        {
+                            CurrentStatus = $"维护模式...";
+                            StopFlag = false;
+                            Invoke(new MethodInvoker(() => StopBtn.Enabled = false));
+                            return;
+                        }
+                        Thread.Sleep(100);
+                    }
                     Process.Start(new ProcessStartInfo
                     { 
                         FileName = item.Path, 

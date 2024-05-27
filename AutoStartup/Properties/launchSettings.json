@@ -1,8 +1,7 @@
 {
   "profiles": {
     "AutoStartup": {
-      "commandName": "Project",
-      "commandLineArgs": "-o"
+      "commandName": "Project"
     }
   }
 }

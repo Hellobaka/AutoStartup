@@ -30,6 +30,9 @@
         {
             StartUpSelector = new CheckBox();
             groupBox1 = new GroupBox();
+            label5 = new Label();
+            DelayValue = new TextBox();
+            label4 = new Label();
             HideWindowSelector = new CheckBox();
             TestBtn = new Button();
             OpenFileDialogBtn = new Button();
@@ -49,6 +52,7 @@
             columnHeader2 = new ColumnHeader();
             columnHeader3 = new ColumnHeader();
             columnHeader4 = new ColumnHeader();
+            columnHeader6 = new ColumnHeader();
             OpenFileDialog = new OpenFileDialog();
             groupBox2 = new GroupBox();
             KillSelectButton = new Button();
@@ -72,6 +76,9 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(label5);
+            groupBox1.Controls.Add(DelayValue);
+            groupBox1.Controls.Add(label4);
             groupBox1.Controls.Add(HideWindowSelector);
             groupBox1.Controls.Add(TestBtn);
             groupBox1.Controls.Add(OpenFileDialogBtn);
@@ -87,15 +94,40 @@
             groupBox1.Controls.Add(label1);
             groupBox1.Location = new Point(12, 39);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(471, 168);
+            groupBox1.Size = new Size(471, 198);
             groupBox1.TabIndex = 1;
             groupBox1.TabStop = false;
             groupBox1.Text = "添加参数 (可拖动文件)";
             // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(438, 112);
+            label5.Name = "label5";
+            label5.Size = new Size(25, 17);
+            label5.TabIndex = 11;
+            label5.Text = "ms";
+            // 
+            // DelayValue
+            // 
+            DelayValue.Location = new Point(47, 109);
+            DelayValue.Name = "DelayValue";
+            DelayValue.Size = new Size(387, 23);
+            DelayValue.TabIndex = 10;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(6, 112);
+            label4.Name = "label4";
+            label4.Size = new Size(35, 17);
+            label4.TabIndex = 9;
+            label4.Text = "延时:";
+            // 
             // HideWindowSelector
             // 
             HideWindowSelector.AutoSize = true;
-            HideWindowSelector.Location = new Point(85, 109);
+            HideWindowSelector.Location = new Point(87, 140);
             HideWindowSelector.Name = "HideWindowSelector";
             HideWindowSelector.Size = new Size(159, 21);
             HideWindowSelector.TabIndex = 8;
@@ -104,7 +136,7 @@
             // 
             // TestBtn
             // 
-            TestBtn.Location = new Point(394, 139);
+            TestBtn.Location = new Point(396, 170);
             TestBtn.Name = "TestBtn";
             TestBtn.Size = new Size(75, 23);
             TestBtn.TabIndex = 7;
@@ -125,7 +157,7 @@
             // ProgramEnabled
             // 
             ProgramEnabled.AutoSize = true;
-            ProgramEnabled.Location = new Point(6, 109);
+            ProgramEnabled.Location = new Point(8, 140);
             ProgramEnabled.Name = "ProgramEnabled";
             ProgramEnabled.Size = new Size(51, 21);
             ProgramEnabled.TabIndex = 6;
@@ -134,7 +166,7 @@
             // 
             // DeleteBtn
             // 
-            DeleteBtn.Location = new Point(166, 139);
+            DeleteBtn.Location = new Point(168, 170);
             DeleteBtn.Name = "DeleteBtn";
             DeleteBtn.Size = new Size(75, 23);
             DeleteBtn.TabIndex = 5;
@@ -144,7 +176,7 @@
             // 
             // EditBtn
             // 
-            EditBtn.Location = new Point(85, 139);
+            EditBtn.Location = new Point(87, 170);
             EditBtn.Name = "EditBtn";
             EditBtn.Size = new Size(75, 23);
             EditBtn.TabIndex = 4;
@@ -162,7 +194,7 @@
             // 
             // AddBtn
             // 
-            AddBtn.Location = new Point(4, 139);
+            AddBtn.Location = new Point(6, 170);
             AddBtn.Name = "AddBtn";
             AddBtn.Size = new Size(75, 23);
             AddBtn.TabIndex = 3;
@@ -215,9 +247,9 @@
             // 
             // StartupList
             // 
-            StartupList.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader5, columnHeader2, columnHeader3, columnHeader4 });
+            StartupList.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader5, columnHeader2, columnHeader3, columnHeader6, columnHeader4 });
             StartupList.FullRowSelect = true;
-            StartupList.Location = new Point(12, 213);
+            StartupList.Location = new Point(12, 243);
             StartupList.Name = "StartupList";
             StartupList.Size = new Size(471, 248);
             StartupList.TabIndex = 2;
@@ -250,6 +282,11 @@
             columnHeader4.Text = "参数";
             columnHeader4.Width = 36;
             // 
+            // columnHeader6
+            // 
+            columnHeader6.Text = "延时";
+            columnHeader6.Width = 25;
+            // 
             // OpenFileDialog
             // 
             OpenFileDialog.FileName = "openFileDialog1";
@@ -262,7 +299,7 @@
             groupBox2.Controls.Add(KillAllButton);
             groupBox2.Controls.Add(StopBtn);
             groupBox2.Controls.Add(StatusLabel);
-            groupBox2.Location = new Point(12, 467);
+            groupBox2.Location = new Point(12, 497);
             groupBox2.Name = "groupBox2";
             groupBox2.Size = new Size(471, 64);
             groupBox2.TabIndex = 6;
@@ -314,7 +351,7 @@
             AllowDrop = true;
             AutoScaleDimensions = new SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
-            ClientSize = new Size(495, 543);
+            ClientSize = new Size(495, 569);
             Controls.Add(groupBox2);
             Controls.Add(StartupList);
             Controls.Add(groupBox1);
@@ -364,5 +401,9 @@
         private Button KillAllButton;
         private CheckBox HideWindowSelector;
         private ColumnHeader columnHeader5;
+        private Label label5;
+        private TextBox DelayValue;
+        private Label label4;
+        private ColumnHeader columnHeader6;
     }
 }
