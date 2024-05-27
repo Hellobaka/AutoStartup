@@ -28,274 +28,311 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.StartUpSelector = new System.Windows.Forms.CheckBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.OpenFileDialogBtn = new System.Windows.Forms.Button();
-            this.ProgramEnabled = new System.Windows.Forms.CheckBox();
-            this.ProgramArg = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.ProgramPath = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.ProgramName = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.StartupList = new System.Windows.Forms.ListView();
-            this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
-            this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
-            this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
-            this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
-            this.AddBtn = new System.Windows.Forms.Button();
-            this.EditBtn = new System.Windows.Forms.Button();
-            this.DeleteBtn = new System.Windows.Forms.Button();
-            this.OpenFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.StopBtn = new System.Windows.Forms.Button();
-            this.StatusLabel = new System.Windows.Forms.Label();
-            this.TestBtn = new System.Windows.Forms.Button();
-            this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.SuspendLayout();
+            StartUpSelector = new CheckBox();
+            groupBox1 = new GroupBox();
+            HideWindowSelector = new CheckBox();
+            TestBtn = new Button();
+            OpenFileDialogBtn = new Button();
+            ProgramEnabled = new CheckBox();
+            DeleteBtn = new Button();
+            EditBtn = new Button();
+            ProgramArg = new TextBox();
+            AddBtn = new Button();
+            label3 = new Label();
+            ProgramPath = new TextBox();
+            label2 = new Label();
+            ProgramName = new TextBox();
+            label1 = new Label();
+            StartupList = new ListView();
+            columnHeader1 = new ColumnHeader();
+            columnHeader5 = new ColumnHeader();
+            columnHeader2 = new ColumnHeader();
+            columnHeader3 = new ColumnHeader();
+            columnHeader4 = new ColumnHeader();
+            OpenFileDialog = new OpenFileDialog();
+            groupBox2 = new GroupBox();
+            KillSelectButton = new Button();
+            KillAllButton = new Button();
+            StopBtn = new Button();
+            StatusLabel = new Label();
+            groupBox1.SuspendLayout();
+            groupBox2.SuspendLayout();
+            SuspendLayout();
             // 
             // StartUpSelector
             // 
-            this.StartUpSelector.AutoSize = true;
-            this.StartUpSelector.Location = new System.Drawing.Point(12, 12);
-            this.StartUpSelector.Name = "StartUpSelector";
-            this.StartUpSelector.Size = new System.Drawing.Size(75, 21);
-            this.StartUpSelector.TabIndex = 0;
-            this.StartUpSelector.Text = "开机自启";
-            this.StartUpSelector.UseVisualStyleBackColor = true;
-            this.StartUpSelector.CheckedChanged += new System.EventHandler(this.StartUpSelector_CheckedChanged);
+            StartUpSelector.AutoSize = true;
+            StartUpSelector.Location = new Point(12, 12);
+            StartUpSelector.Name = "StartUpSelector";
+            StartUpSelector.Size = new Size(207, 21);
+            StartUpSelector.TabIndex = 0;
+            StartUpSelector.Text = "开机自启 (修改请给予管理员权限)";
+            StartUpSelector.UseVisualStyleBackColor = true;
+            StartUpSelector.CheckedChanged += StartUpSelector_CheckedChanged;
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.OpenFileDialogBtn);
-            this.groupBox1.Controls.Add(this.ProgramEnabled);
-            this.groupBox1.Controls.Add(this.ProgramArg);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.ProgramPath);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.ProgramName);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(12, 39);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(471, 139);
-            this.groupBox1.TabIndex = 1;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "添加参数 (可拖动文件)";
+            groupBox1.Controls.Add(HideWindowSelector);
+            groupBox1.Controls.Add(TestBtn);
+            groupBox1.Controls.Add(OpenFileDialogBtn);
+            groupBox1.Controls.Add(ProgramEnabled);
+            groupBox1.Controls.Add(DeleteBtn);
+            groupBox1.Controls.Add(EditBtn);
+            groupBox1.Controls.Add(ProgramArg);
+            groupBox1.Controls.Add(AddBtn);
+            groupBox1.Controls.Add(label3);
+            groupBox1.Controls.Add(ProgramPath);
+            groupBox1.Controls.Add(label2);
+            groupBox1.Controls.Add(ProgramName);
+            groupBox1.Controls.Add(label1);
+            groupBox1.Location = new Point(12, 39);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(471, 168);
+            groupBox1.TabIndex = 1;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "添加参数 (可拖动文件)";
             // 
-            // OpenFileDialogBtn
+            // HideWindowSelector
             // 
-            this.OpenFileDialogBtn.Location = new System.Drawing.Point(390, 51);
-            this.OpenFileDialogBtn.Name = "OpenFileDialogBtn";
-            this.OpenFileDialogBtn.Size = new System.Drawing.Size(75, 23);
-            this.OpenFileDialogBtn.TabIndex = 7;
-            this.OpenFileDialogBtn.Text = "浏览";
-            this.OpenFileDialogBtn.UseVisualStyleBackColor = true;
-            this.OpenFileDialogBtn.Click += new System.EventHandler(this.OpenFileDialog_Click);
-            // 
-            // ProgramEnabled
-            // 
-            this.ProgramEnabled.AutoSize = true;
-            this.ProgramEnabled.Location = new System.Drawing.Point(6, 109);
-            this.ProgramEnabled.Name = "ProgramEnabled";
-            this.ProgramEnabled.Size = new System.Drawing.Size(51, 21);
-            this.ProgramEnabled.TabIndex = 6;
-            this.ProgramEnabled.Text = "启用";
-            this.ProgramEnabled.UseVisualStyleBackColor = true;
-            // 
-            // ProgramArg
-            // 
-            this.ProgramArg.Location = new System.Drawing.Point(47, 80);
-            this.ProgramArg.Name = "ProgramArg";
-            this.ProgramArg.Size = new System.Drawing.Size(418, 23);
-            this.ProgramArg.TabIndex = 5;
-            this.ProgramArg.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Program_KeyDown);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 83);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(35, 17);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "参数:";
-            // 
-            // ProgramPath
-            // 
-            this.ProgramPath.Location = new System.Drawing.Point(47, 51);
-            this.ProgramPath.Name = "ProgramPath";
-            this.ProgramPath.Size = new System.Drawing.Size(337, 23);
-            this.ProgramPath.TabIndex = 3;
-            this.ProgramPath.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Program_KeyDown);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 54);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(35, 17);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "路径:";
-            // 
-            // ProgramName
-            // 
-            this.ProgramName.Location = new System.Drawing.Point(47, 22);
-            this.ProgramName.Name = "ProgramName";
-            this.ProgramName.Size = new System.Drawing.Size(418, 23);
-            this.ProgramName.TabIndex = 1;
-            this.ProgramName.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Program_KeyDown);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 25);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(35, 17);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "名称:";
-            // 
-            // StartupList
-            // 
-            this.StartupList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1,
-            this.columnHeader2,
-            this.columnHeader3,
-            this.columnHeader4});
-            this.StartupList.FullRowSelect = true;
-            this.StartupList.Location = new System.Drawing.Point(12, 213);
-            this.StartupList.Name = "StartupList";
-            this.StartupList.Size = new System.Drawing.Size(471, 248);
-            this.StartupList.TabIndex = 2;
-            this.StartupList.UseCompatibleStateImageBehavior = false;
-            this.StartupList.View = System.Windows.Forms.View.Details;
-            this.StartupList.KeyDown += new System.Windows.Forms.KeyEventHandler(this.StartupList_KeyDown);
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Text = "启用";
-            this.columnHeader1.Width = 25;
-            // 
-            // columnHeader2
-            // 
-            this.columnHeader2.Text = "名称";
-            this.columnHeader2.Width = 25;
-            // 
-            // columnHeader3
-            // 
-            this.columnHeader3.Text = "路径";
-            this.columnHeader3.Width = 25;
-            // 
-            // columnHeader4
-            // 
-            this.columnHeader4.Text = "参数";
-            this.columnHeader4.Width = 36;
-            // 
-            // AddBtn
-            // 
-            this.AddBtn.Location = new System.Drawing.Point(12, 184);
-            this.AddBtn.Name = "AddBtn";
-            this.AddBtn.Size = new System.Drawing.Size(75, 23);
-            this.AddBtn.TabIndex = 3;
-            this.AddBtn.Text = "添加";
-            this.AddBtn.UseVisualStyleBackColor = true;
-            this.AddBtn.Click += new System.EventHandler(this.AddBtn_Click);
-            // 
-            // EditBtn
-            // 
-            this.EditBtn.Location = new System.Drawing.Point(93, 184);
-            this.EditBtn.Name = "EditBtn";
-            this.EditBtn.Size = new System.Drawing.Size(75, 23);
-            this.EditBtn.TabIndex = 4;
-            this.EditBtn.Text = "编辑";
-            this.EditBtn.UseVisualStyleBackColor = true;
-            this.EditBtn.Click += new System.EventHandler(this.EditBtn_Click);
-            // 
-            // DeleteBtn
-            // 
-            this.DeleteBtn.Location = new System.Drawing.Point(174, 184);
-            this.DeleteBtn.Name = "DeleteBtn";
-            this.DeleteBtn.Size = new System.Drawing.Size(75, 23);
-            this.DeleteBtn.TabIndex = 5;
-            this.DeleteBtn.Text = "删除";
-            this.DeleteBtn.UseVisualStyleBackColor = true;
-            this.DeleteBtn.Click += new System.EventHandler(this.DeleteBtn_Click);
-            // 
-            // OpenFileDialog
-            // 
-            this.OpenFileDialog.FileName = "openFileDialog1";
-            this.OpenFileDialog.Filter = "可执行程序|*.exe|所有文件|*.*";
-            this.OpenFileDialog.Title = "选择需要启动程序的路径";
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.StopBtn);
-            this.groupBox2.Controls.Add(this.StatusLabel);
-            this.groupBox2.Location = new System.Drawing.Point(12, 467);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(471, 64);
-            this.groupBox2.TabIndex = 6;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "状态";
-            // 
-            // StopBtn
-            // 
-            this.StopBtn.Enabled = false;
-            this.StopBtn.Location = new System.Drawing.Point(390, 26);
-            this.StopBtn.Name = "StopBtn";
-            this.StopBtn.Size = new System.Drawing.Size(75, 23);
-            this.StopBtn.TabIndex = 1;
-            this.StopBtn.Text = "终止";
-            this.StopBtn.UseVisualStyleBackColor = true;
-            this.StopBtn.Click += new System.EventHandler(this.StopBtn_Click);
-            // 
-            // StatusLabel
-            // 
-            this.StatusLabel.AutoSize = true;
-            this.StatusLabel.Location = new System.Drawing.Point(10, 29);
-            this.StatusLabel.Name = "StatusLabel";
-            this.StatusLabel.Size = new System.Drawing.Size(65, 17);
-            this.StatusLabel.TabIndex = 0;
-            this.StatusLabel.Text = "维护模式...";
+            HideWindowSelector.AutoSize = true;
+            HideWindowSelector.Location = new Point(85, 109);
+            HideWindowSelector.Name = "HideWindowSelector";
+            HideWindowSelector.Size = new Size(159, 21);
+            HideWindowSelector.TabIndex = 8;
+            HideWindowSelector.Text = "隐藏窗口 (仅控制台应用)";
+            HideWindowSelector.UseVisualStyleBackColor = true;
             // 
             // TestBtn
             // 
-            this.TestBtn.Location = new System.Drawing.Point(402, 184);
-            this.TestBtn.Name = "TestBtn";
-            this.TestBtn.Size = new System.Drawing.Size(75, 23);
-            this.TestBtn.TabIndex = 7;
-            this.TestBtn.Text = "测试";
-            this.TestBtn.UseVisualStyleBackColor = true;
-            this.TestBtn.Click += new System.EventHandler(this.TestBtn_Click);
+            TestBtn.Location = new Point(394, 139);
+            TestBtn.Name = "TestBtn";
+            TestBtn.Size = new Size(75, 23);
+            TestBtn.TabIndex = 7;
+            TestBtn.Text = "测试";
+            TestBtn.UseVisualStyleBackColor = true;
+            TestBtn.Click += TestBtn_Click;
+            // 
+            // OpenFileDialogBtn
+            // 
+            OpenFileDialogBtn.Location = new Point(390, 51);
+            OpenFileDialogBtn.Name = "OpenFileDialogBtn";
+            OpenFileDialogBtn.Size = new Size(75, 23);
+            OpenFileDialogBtn.TabIndex = 7;
+            OpenFileDialogBtn.Text = "浏览";
+            OpenFileDialogBtn.UseVisualStyleBackColor = true;
+            OpenFileDialogBtn.Click += OpenFileDialog_Click;
+            // 
+            // ProgramEnabled
+            // 
+            ProgramEnabled.AutoSize = true;
+            ProgramEnabled.Location = new Point(6, 109);
+            ProgramEnabled.Name = "ProgramEnabled";
+            ProgramEnabled.Size = new Size(51, 21);
+            ProgramEnabled.TabIndex = 6;
+            ProgramEnabled.Text = "启用";
+            ProgramEnabled.UseVisualStyleBackColor = true;
+            // 
+            // DeleteBtn
+            // 
+            DeleteBtn.Location = new Point(166, 139);
+            DeleteBtn.Name = "DeleteBtn";
+            DeleteBtn.Size = new Size(75, 23);
+            DeleteBtn.TabIndex = 5;
+            DeleteBtn.Text = "删除";
+            DeleteBtn.UseVisualStyleBackColor = true;
+            DeleteBtn.Click += DeleteBtn_Click;
+            // 
+            // EditBtn
+            // 
+            EditBtn.Location = new Point(85, 139);
+            EditBtn.Name = "EditBtn";
+            EditBtn.Size = new Size(75, 23);
+            EditBtn.TabIndex = 4;
+            EditBtn.Text = "编辑";
+            EditBtn.UseVisualStyleBackColor = true;
+            EditBtn.Click += EditBtn_Click;
+            // 
+            // ProgramArg
+            // 
+            ProgramArg.Location = new Point(47, 80);
+            ProgramArg.Name = "ProgramArg";
+            ProgramArg.Size = new Size(418, 23);
+            ProgramArg.TabIndex = 5;
+            ProgramArg.KeyDown += Program_KeyDown;
+            // 
+            // AddBtn
+            // 
+            AddBtn.Location = new Point(4, 139);
+            AddBtn.Name = "AddBtn";
+            AddBtn.Size = new Size(75, 23);
+            AddBtn.TabIndex = 3;
+            AddBtn.Text = "添加";
+            AddBtn.UseVisualStyleBackColor = true;
+            AddBtn.Click += AddBtn_Click;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(6, 83);
+            label3.Name = "label3";
+            label3.Size = new Size(35, 17);
+            label3.TabIndex = 4;
+            label3.Text = "参数:";
+            // 
+            // ProgramPath
+            // 
+            ProgramPath.Location = new Point(47, 51);
+            ProgramPath.Name = "ProgramPath";
+            ProgramPath.Size = new Size(337, 23);
+            ProgramPath.TabIndex = 3;
+            ProgramPath.KeyDown += Program_KeyDown;
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(6, 54);
+            label2.Name = "label2";
+            label2.Size = new Size(35, 17);
+            label2.TabIndex = 2;
+            label2.Text = "路径:";
+            // 
+            // ProgramName
+            // 
+            ProgramName.Location = new Point(47, 22);
+            ProgramName.Name = "ProgramName";
+            ProgramName.Size = new Size(418, 23);
+            ProgramName.TabIndex = 1;
+            ProgramName.KeyDown += Program_KeyDown;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(6, 25);
+            label1.Name = "label1";
+            label1.Size = new Size(35, 17);
+            label1.TabIndex = 0;
+            label1.Text = "名称:";
+            // 
+            // StartupList
+            // 
+            StartupList.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader5, columnHeader2, columnHeader3, columnHeader4 });
+            StartupList.FullRowSelect = true;
+            StartupList.Location = new Point(12, 213);
+            StartupList.Name = "StartupList";
+            StartupList.Size = new Size(471, 248);
+            StartupList.TabIndex = 2;
+            StartupList.UseCompatibleStateImageBehavior = false;
+            StartupList.View = View.Details;
+            StartupList.KeyDown += StartupList_KeyDown;
+            // 
+            // columnHeader1
+            // 
+            columnHeader1.Text = "启用";
+            columnHeader1.Width = 25;
+            // 
+            // columnHeader5
+            // 
+            columnHeader5.Text = "隐藏窗口";
+            columnHeader5.Width = 25;
+            // 
+            // columnHeader2
+            // 
+            columnHeader2.Text = "名称";
+            columnHeader2.Width = 25;
+            // 
+            // columnHeader3
+            // 
+            columnHeader3.Text = "路径";
+            columnHeader3.Width = 25;
+            // 
+            // columnHeader4
+            // 
+            columnHeader4.Text = "参数";
+            columnHeader4.Width = 36;
+            // 
+            // OpenFileDialog
+            // 
+            OpenFileDialog.FileName = "openFileDialog1";
+            OpenFileDialog.Filter = "可执行程序|*.exe|所有文件|*.*";
+            OpenFileDialog.Title = "选择需要启动程序的路径";
+            // 
+            // groupBox2
+            // 
+            groupBox2.Controls.Add(KillSelectButton);
+            groupBox2.Controls.Add(KillAllButton);
+            groupBox2.Controls.Add(StopBtn);
+            groupBox2.Controls.Add(StatusLabel);
+            groupBox2.Location = new Point(12, 467);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new Size(471, 64);
+            groupBox2.TabIndex = 6;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "状态";
+            // 
+            // KillSelectButton
+            // 
+            KillSelectButton.Location = new Point(228, 26);
+            KillSelectButton.Name = "KillSelectButton";
+            KillSelectButton.Size = new Size(75, 23);
+            KillSelectButton.TabIndex = 3;
+            KillSelectButton.Text = "终止选中";
+            KillSelectButton.UseVisualStyleBackColor = true;
+            KillSelectButton.Click += KillSelectButton_Click;
+            // 
+            // KillAllButton
+            // 
+            KillAllButton.Location = new Point(309, 26);
+            KillAllButton.Name = "KillAllButton";
+            KillAllButton.Size = new Size(75, 23);
+            KillAllButton.TabIndex = 2;
+            KillAllButton.Text = "终止所有";
+            KillAllButton.UseVisualStyleBackColor = true;
+            KillAllButton.Click += KillAllButton_Click;
+            // 
+            // StopBtn
+            // 
+            StopBtn.Enabled = false;
+            StopBtn.Location = new Point(390, 26);
+            StopBtn.Name = "StopBtn";
+            StopBtn.Size = new Size(75, 23);
+            StopBtn.TabIndex = 1;
+            StopBtn.Text = "终止";
+            StopBtn.UseVisualStyleBackColor = true;
+            StopBtn.Click += StopBtn_Click;
+            // 
+            // StatusLabel
+            // 
+            StatusLabel.AutoSize = true;
+            StatusLabel.Location = new Point(10, 29);
+            StatusLabel.Name = "StatusLabel";
+            StatusLabel.Size = new Size(65, 17);
+            StatusLabel.TabIndex = 0;
+            StatusLabel.Text = "维护模式...";
             // 
             // MainForm
             // 
-            this.AllowDrop = true;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(495, 543);
-            this.Controls.Add(this.TestBtn);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.DeleteBtn);
-            this.Controls.Add(this.EditBtn);
-            this.Controls.Add(this.AddBtn);
-            this.Controls.Add(this.StartupList);
-            this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.StartUpSelector);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Name = "MainForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "MainForm";
-            this.Load += new System.EventHandler(this.MainForm_Load);
-            this.DragDrop += new System.Windows.Forms.DragEventHandler(this.MainForm_DragDrop);
-            this.DragEnter += new System.Windows.Forms.DragEventHandler(this.MainForm_DragEnter);
-            this.DragLeave += new System.EventHandler(this.MainForm_DragLeave);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AllowDrop = true;
+            AutoScaleDimensions = new SizeF(96F, 96F);
+            AutoScaleMode = AutoScaleMode.Dpi;
+            ClientSize = new Size(495, 543);
+            Controls.Add(groupBox2);
+            Controls.Add(StartupList);
+            Controls.Add(groupBox1);
+            Controls.Add(StartUpSelector);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
+            Name = "MainForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "MainForm";
+            Load += MainForm_Load;
+            DragDrop += MainForm_DragDrop;
+            DragEnter += MainForm_DragEnter;
+            DragLeave += MainForm_DragLeave;
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -323,5 +360,9 @@
         private Button StopBtn;
         private Label StatusLabel;
         private Button TestBtn;
+        private Button KillSelectButton;
+        private Button KillAllButton;
+        private CheckBox HideWindowSelector;
+        private ColumnHeader columnHeader5;
     }
 }

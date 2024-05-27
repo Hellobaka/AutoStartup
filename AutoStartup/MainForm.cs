@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Data;
 using System.Diagnostics;
 
@@ -8,7 +9,6 @@ namespace AutoStartup
 {
     public partial class MainForm : Form
     {
-        public static List<StartUpItem> StartUpItems { get; set; } = new();
         public bool Maintance { get; set; }
         public bool HasError { get; set; }
         public string CurrentStatus
@@ -26,12 +26,15 @@ namespace AutoStartup
                 }
             }
         }
+        public Config ConfigItem { get; set; }
+
         public class StartUpItem
         {
             public string Name { get; set; }
             public string Path { get; set; }
             public string Arg { get; set; }
             public bool Enabled { get; set; }
+            public bool HideWindow { get; set; }
         }
 
         public MainForm(bool v)
@@ -89,19 +92,20 @@ namespace AutoStartup
             {
                 return;
             }
-            if (StartUpItems.Any(x => x.Path == ProgramPath.Text))
+            if (ConfigItem.StartUpItems.Any(x => x.Path == ProgramPath.Text))
             {
                 MessageBox.Show("存在路径相同的文件", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            StartUpItems.Add(new StartUpItem
+            ConfigItem.StartUpItems.Add(new StartUpItem
             {
                 Name = ProgramName.Text,
                 Path = ProgramPath.Text,
                 Arg = ProgramArg.Text,
-                Enabled = ProgramEnabled.Checked
+                Enabled = ProgramEnabled.Checked,
+                HideWindow = HideWindowSelector.Checked
             });
-            File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(StartUpItems, Formatting.Indented));
+            File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(ConfigItem, Formatting.Indented));
             RefreshList();
         }
 
@@ -112,10 +116,11 @@ namespace AutoStartup
             {
                 StartupList.Columns[i].Width = -1;
             }
-            foreach (var item in StartUpItems)
+            foreach (var item in ConfigItem.StartUpItems)
             {
                 ListViewItem viewItem = new();
                 viewItem.SubItems[0].Text = item.Enabled ? "是" : "否";
+                viewItem.SubItems.Add(item.HideWindow ? "是" : "否");
                 viewItem.SubItems.Add(item.Name);
                 viewItem.SubItems.Add(item.Path);
                 viewItem.SubItems.Add(item.Arg);
@@ -144,12 +149,13 @@ namespace AutoStartup
             {
                 return;
             }
-            var item = StartUpItems[StartupList.SelectedIndices[0]];
+            var item = ConfigItem.StartUpItems[StartupList.SelectedIndices[0]];
             item.Name = ProgramName.Text;
             item.Path = ProgramPath.Text;
             item.Arg = ProgramArg.Text;
             item.Enabled = ProgramEnabled.Checked;
-            File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(StartUpItems, Formatting.Indented));
+            item.HideWindow = HideWindowSelector.Checked;
+            File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(ConfigItem, Formatting.Indented));
             RefreshList();
         }
 
@@ -164,8 +170,8 @@ namespace AutoStartup
             {
                 return;
             }
-            StartUpItems.RemoveAt(StartupList.SelectedIndices[0]);
-            File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(StartUpItems, Formatting.Indented));
+            ConfigItem.StartUpItems.RemoveAt(StartupList.SelectedIndices[0]);
+            File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(ConfigItem, Formatting.Indented));
             RefreshList();
         }
 
@@ -208,6 +214,7 @@ namespace AutoStartup
             ProgramPath.Text = "";
             ProgramArg.Text = "";
             ProgramEnabled.Checked = false;
+            HideWindowSelector.Checked = false;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -215,19 +222,20 @@ namespace AutoStartup
             ConfigPath = AppDomain.CurrentDomain.BaseDirectory + "Config.json";
             if (File.Exists(ConfigPath))
             {
-                StartUpItems = JsonConvert.DeserializeObject<List<StartUpItem>>(File.ReadAllText(ConfigPath));
+                try
+                {
+                    ConfigItem = JsonConvert.DeserializeObject<Config>(File.ReadAllText(ConfigPath));
+                }
+                catch { }
             }
-            if (StartUpItems == null)
-            {
-                StartUpItems = new();
-            }
+            ConfigItem ??= new();
             StartupList.MouseDoubleClick += StartupList_MouseDoubleClick;
             RefreshList();
             StartUpSelector.Checked = IsStartup;
             Loaded = true;
             if (!Maintance)
             {
-                new Thread(StartProcess).Start();
+                new Thread(() => StartProcess(ConfigItem.StartWaitTime)).Start();
             }
         }
 
@@ -238,21 +246,23 @@ namespace AutoStartup
 
             if (item != null)
             {
-                ProgramName.Text = item.SubItems[1].Text;
-                ProgramPath.Text = item.SubItems[2].Text;
-                ProgramArg.Text = item.SubItems[3].Text;
+                ProgramName.Text = item.SubItems[2].Text;
+                ProgramPath.Text = item.SubItems[3].Text;
+                ProgramArg.Text = item.SubItems[4].Text;
                 ProgramEnabled.Checked = item.SubItems[0].Text == "是";
+                HideWindowSelector.Checked = item.SubItems[1].Text == "是";
             }
         }
 
-        private void StartProcess()
+        private void StartProcess(int waitSeconds)
         {
             HasError = false;
             StopFlag = false;
             Invoke(new MethodInvoker(() => StopBtn.Enabled = true));
-            for (int i = 0; i < 30; i++)
+            waitSeconds *= 10;
+            for (int i = 0; i < waitSeconds; i++)
             {
-                CurrentStatus = $"将在{((double)30 - i) / 10:f2}s后开始启动程序执行...";
+                CurrentStatus = $"将在{((double)waitSeconds - i) / 10:f2}s后开始启动程序执行...";
                 if (StopFlag)
                 {
                     CurrentStatus = $"维护模式...";
@@ -263,7 +273,7 @@ namespace AutoStartup
                 Thread.Sleep(100);
             }
 
-            foreach (var item in StartUpItems.Where(x => x.Enabled))
+            foreach (var item in ConfigItem.StartUpItems.Where(x => x.Enabled))
             {
                 if (StopFlag)
                 {
@@ -275,7 +285,14 @@ namespace AutoStartup
                 CurrentStatus = $"启动程序 {item.Name} 中...";
                 try
                 {
-                    Process.Start(new ProcessStartInfo { FileName = item.Path, WorkingDirectory = new FileInfo(item.Path).DirectoryName, Arguments = item.Arg, UseShellExecute = true });
+                    Process.Start(new ProcessStartInfo
+                    { 
+                        FileName = item.Path, 
+                        WorkingDirectory = new FileInfo(item.Path).DirectoryName, 
+                        Arguments = item.Arg, 
+                        UseShellExecute = !item.HideWindow,
+                        CreateNoWindow = item.HideWindow
+                    });
                 }
                 catch (Exception e)
                 {
@@ -296,9 +313,9 @@ namespace AutoStartup
                     Invoke(new MethodInvoker(() => StopBtn.Enabled = false));
                     return;
                 }
-                for (int i = 0; i < 30; i++)
+                for (int i = 0; i < waitSeconds; i++)
                 {
-                    CurrentStatus = $"启动完成...将在{((double)30 - i) / 10:f2}s后退出程序...";
+                    CurrentStatus = $"启动完成...将在{((double)waitSeconds - i) / 10:f2}s后退出程序...";
                     if (StopFlag)
                     {
                         CurrentStatus = $"维护模式...";
@@ -345,7 +362,66 @@ namespace AutoStartup
         private void TestBtn_Click(object sender, EventArgs e)
         {
             TestFlag = true;
-            new Thread(StartProcess).Start();
+            new Thread(() => StartProcess(0)).Start();
+        }
+
+        private void KillSelectButton_Click(object sender, EventArgs e)
+        {
+            if (StartupList.SelectedIndices.Count == 0)
+            {
+                MessageBox.Show("请选择一项", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (ConfigItem.StartUpItems.Count <= StartupList.SelectedIndices[0])
+            {
+                MessageBox.Show("索引超出数组界限", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            var item = ConfigItem.StartUpItems[StartupList.SelectedIndices[0]];
+            Process? process = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(item.Path)).FirstOrDefault();
+            if (process != null)
+            {
+                if (MessageBox.Show($"确定要终止 {item.Name} 进程吗？", "Q", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    try
+                    {
+                        process.Kill(true);
+                    }
+                    catch (Exception exc)
+                    {
+                        MessageBox.Show($"无法终止 {item.Name} 的进程，错误: {exc.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show($"无法找到 {item.Name} 的进程", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void KillAllButton_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show($"确定要终止所有进程吗？", "Q", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                int count = 0;
+                foreach (var item in ConfigItem.StartUpItems)
+                {
+                    Process? process = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(item.Path)).FirstOrDefault();
+                    if(process != null)
+                    {
+                        try
+                        {
+                            process.Kill(true);
+                            count++;
+                        }
+                        catch (Exception exc)
+                        {
+                            MessageBox.Show($"无法终止 {item.Name} 的进程，错误: {exc.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+                MessageBox.Show($"终止了 {count} 个进程", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
     }
 }
