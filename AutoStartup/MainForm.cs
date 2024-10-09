@@ -105,9 +105,9 @@ namespace AutoStartup
             {
                 return;
             }
-            if (ConfigItem.StartUpItems.Any(x => x.Path == ProgramPath.Text))
+            if (ConfigItem.StartUpItems.Any(x => x.Path == ProgramPath.Text)
+                && MessageBox.Show("存在路径相同的文件，是否确认要添加", "Error", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
             {
-                MessageBox.Show("存在路径相同的文件", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             ConfigItem.StartUpItems.Add(new StartUpItem
