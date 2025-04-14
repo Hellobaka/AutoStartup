@@ -316,10 +316,10 @@ namespace AutoStartup
                         Thread.Sleep(100);
                     }
                     Process.Start(new ProcessStartInfo
-                    { 
-                        FileName = item.Path, 
-                        WorkingDirectory = new FileInfo(item.Path).DirectoryName, 
-                        Arguments = item.Arg, 
+                    {
+                        FileName = item.Path,
+                        WorkingDirectory = new FileInfo(item.Path).DirectoryName,
+                        Arguments = item.Arg,
                         UseShellExecute = !item.HideWindow,
                         CreateNoWindow = item.HideWindow
                     });
@@ -437,7 +437,7 @@ namespace AutoStartup
                 foreach (var item in ConfigItem.StartUpItems)
                 {
                     Process? process = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(item.Path)).FirstOrDefault();
-                    if(process != null)
+                    if (process != null)
                     {
                         try
                         {
@@ -452,6 +452,58 @@ namespace AutoStartup
                 }
                 MessageBox.Show($"终止了 {count} 个进程", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+        }
+
+        private void MoveUpButton_Click(object sender, EventArgs e)
+        {
+            if (StartupList.SelectedIndices.Count == 0)
+            {
+                MessageBox.Show("请选择一项", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (ConfigItem.StartUpItems.Count <= StartupList.SelectedIndices[0])
+            {
+                MessageBox.Show("索引超出数组界限", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (StartupList.SelectedIndices[0] == 0)
+            {
+                MessageBox.Show("已经是第一项了", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            int index = StartupList.SelectedIndices[0];
+            var item = ConfigItem.StartUpItems[index];
+            ConfigItem.StartUpItems.RemoveAt(index);
+            ConfigItem.StartUpItems.Insert(index - 1, item);
+            RefreshList();
+            StartupList.Items[index - 1].Selected = true;
+            File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(ConfigItem, Formatting.Indented));
+        }
+
+        private void MoveDownButton_Click(object sender, EventArgs e)
+        {
+            if (StartupList.SelectedIndices.Count == 0)
+            {
+                MessageBox.Show("请选择一项", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (ConfigItem.StartUpItems.Count <= StartupList.SelectedIndices[0])
+            {
+                MessageBox.Show("索引超出数组界限", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (StartupList.SelectedIndices[0] == ConfigItem.StartUpItems.Count - 1)
+            {
+                MessageBox.Show("已经是最后一项了", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            int index = StartupList.SelectedIndices[0];
+            var item = ConfigItem.StartUpItems[index];
+            ConfigItem.StartUpItems.RemoveAt(index);
+            ConfigItem.StartUpItems.Insert(index + 1, item);
+            RefreshList();
+            StartupList.Items[index + 1].Selected = true;
+            File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(ConfigItem, Formatting.Indented));
         }
     }
 }

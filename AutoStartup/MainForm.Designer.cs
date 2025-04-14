@@ -51,14 +51,16 @@
             columnHeader5 = new ColumnHeader();
             columnHeader2 = new ColumnHeader();
             columnHeader3 = new ColumnHeader();
-            columnHeader4 = new ColumnHeader();
             columnHeader6 = new ColumnHeader();
+            columnHeader4 = new ColumnHeader();
             OpenFileDialog = new OpenFileDialog();
             groupBox2 = new GroupBox();
             KillSelectButton = new Button();
             KillAllButton = new Button();
             StopBtn = new Button();
             StatusLabel = new Label();
+            MoveUpButton = new Button();
+            MoveDownButton = new Button();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             SuspendLayout();
@@ -76,6 +78,8 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(MoveDownButton);
+            groupBox1.Controls.Add(MoveUpButton);
             groupBox1.Controls.Add(label5);
             groupBox1.Controls.Add(DelayValue);
             groupBox1.Controls.Add(label4);
@@ -277,15 +281,15 @@
             columnHeader3.Text = "路径";
             columnHeader3.Width = 25;
             // 
-            // columnHeader4
-            // 
-            columnHeader4.Text = "参数";
-            columnHeader4.Width = 36;
-            // 
             // columnHeader6
             // 
             columnHeader6.Text = "延时";
             columnHeader6.Width = 25;
+            // 
+            // columnHeader4
+            // 
+            columnHeader4.Text = "参数";
+            columnHeader4.Width = 36;
             // 
             // OpenFileDialog
             // 
@@ -346,6 +350,26 @@
             StatusLabel.TabIndex = 0;
             StatusLabel.Text = "维护模式...";
             // 
+            // MoveUpButton
+            // 
+            MoveUpButton.Location = new Point(249, 170);
+            MoveUpButton.Name = "MoveUpButton";
+            MoveUpButton.Size = new Size(30, 23);
+            MoveUpButton.TabIndex = 12;
+            MoveUpButton.Text = "↑";
+            MoveUpButton.UseVisualStyleBackColor = true;
+            MoveUpButton.Click += MoveUpButton_Click;
+            // 
+            // MoveDownButton
+            // 
+            MoveDownButton.Location = new Point(285, 170);
+            MoveDownButton.Name = "MoveDownButton";
+            MoveDownButton.Size = new Size(30, 23);
+            MoveDownButton.TabIndex = 13;
+            MoveDownButton.Text = "↓";
+            MoveDownButton.UseVisualStyleBackColor = true;
+            MoveDownButton.Click += MoveDownButton_Click;
+            // 
             // MainForm
             // 
             AllowDrop = true;
@@ -405,5 +429,7 @@
         private TextBox DelayValue;
         private Label label4;
         private ColumnHeader columnHeader6;
+        private Button MoveDownButton;
+        private Button MoveUpButton;
     }
 }
