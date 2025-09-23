@@ -30,11 +30,13 @@
         {
             StartUpSelector = new CheckBox();
             groupBox1 = new GroupBox();
+            SingleTest = new Button();
+            MoveDownButton = new Button();
+            MoveUpButton = new Button();
             label5 = new Label();
             DelayValue = new TextBox();
             label4 = new Label();
             HideWindowSelector = new CheckBox();
-            TestBtn = new Button();
             OpenFileDialogBtn = new Button();
             ProgramEnabled = new CheckBox();
             DeleteBtn = new Button();
@@ -46,6 +48,7 @@
             label2 = new Label();
             ProgramName = new TextBox();
             label1 = new Label();
+            TestBtn = new Button();
             StartupList = new ListView();
             columnHeader1 = new ColumnHeader();
             columnHeader5 = new ColumnHeader();
@@ -59,8 +62,6 @@
             KillAllButton = new Button();
             StopBtn = new Button();
             StatusLabel = new Label();
-            MoveUpButton = new Button();
-            MoveDownButton = new Button();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             SuspendLayout();
@@ -78,13 +79,13 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(SingleTest);
             groupBox1.Controls.Add(MoveDownButton);
             groupBox1.Controls.Add(MoveUpButton);
             groupBox1.Controls.Add(label5);
             groupBox1.Controls.Add(DelayValue);
             groupBox1.Controls.Add(label4);
             groupBox1.Controls.Add(HideWindowSelector);
-            groupBox1.Controls.Add(TestBtn);
             groupBox1.Controls.Add(OpenFileDialogBtn);
             groupBox1.Controls.Add(ProgramEnabled);
             groupBox1.Controls.Add(DeleteBtn);
@@ -102,6 +103,36 @@
             groupBox1.TabIndex = 1;
             groupBox1.TabStop = false;
             groupBox1.Text = "添加参数 (可拖动文件)";
+            // 
+            // SingleTest
+            // 
+            SingleTest.Location = new Point(390, 169);
+            SingleTest.Name = "SingleTest";
+            SingleTest.Size = new Size(75, 23);
+            SingleTest.TabIndex = 14;
+            SingleTest.Text = "测试";
+            SingleTest.UseVisualStyleBackColor = true;
+            SingleTest.Click += SingleTest_Click;
+            // 
+            // MoveDownButton
+            // 
+            MoveDownButton.Location = new Point(285, 170);
+            MoveDownButton.Name = "MoveDownButton";
+            MoveDownButton.Size = new Size(30, 23);
+            MoveDownButton.TabIndex = 13;
+            MoveDownButton.Text = "↓";
+            MoveDownButton.UseVisualStyleBackColor = true;
+            MoveDownButton.Click += MoveDownButton_Click;
+            // 
+            // MoveUpButton
+            // 
+            MoveUpButton.Location = new Point(249, 170);
+            MoveUpButton.Name = "MoveUpButton";
+            MoveUpButton.Size = new Size(30, 23);
+            MoveUpButton.TabIndex = 12;
+            MoveUpButton.Text = "↑";
+            MoveUpButton.UseVisualStyleBackColor = true;
+            MoveUpButton.Click += MoveUpButton_Click;
             // 
             // label5
             // 
@@ -137,16 +168,6 @@
             HideWindowSelector.TabIndex = 8;
             HideWindowSelector.Text = "隐藏窗口 (仅控制台应用)";
             HideWindowSelector.UseVisualStyleBackColor = true;
-            // 
-            // TestBtn
-            // 
-            TestBtn.Location = new Point(396, 170);
-            TestBtn.Name = "TestBtn";
-            TestBtn.Size = new Size(75, 23);
-            TestBtn.TabIndex = 7;
-            TestBtn.Text = "测试";
-            TestBtn.UseVisualStyleBackColor = true;
-            TestBtn.Click += TestBtn_Click;
             // 
             // OpenFileDialogBtn
             // 
@@ -249,6 +270,16 @@
             label1.TabIndex = 0;
             label1.Text = "名称:";
             // 
+            // TestBtn
+            // 
+            TestBtn.Location = new Point(147, 26);
+            TestBtn.Name = "TestBtn";
+            TestBtn.Size = new Size(75, 23);
+            TestBtn.TabIndex = 7;
+            TestBtn.Text = "测试所有";
+            TestBtn.UseVisualStyleBackColor = true;
+            TestBtn.Click += TestBtn_Click;
+            // 
             // StartupList
             // 
             StartupList.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader5, columnHeader2, columnHeader3, columnHeader6, columnHeader4 });
@@ -303,6 +334,7 @@
             groupBox2.Controls.Add(KillAllButton);
             groupBox2.Controls.Add(StopBtn);
             groupBox2.Controls.Add(StatusLabel);
+            groupBox2.Controls.Add(TestBtn);
             groupBox2.Location = new Point(12, 497);
             groupBox2.Name = "groupBox2";
             groupBox2.Size = new Size(471, 64);
@@ -349,26 +381,6 @@
             StatusLabel.Size = new Size(65, 17);
             StatusLabel.TabIndex = 0;
             StatusLabel.Text = "维护模式...";
-            // 
-            // MoveUpButton
-            // 
-            MoveUpButton.Location = new Point(249, 170);
-            MoveUpButton.Name = "MoveUpButton";
-            MoveUpButton.Size = new Size(30, 23);
-            MoveUpButton.TabIndex = 12;
-            MoveUpButton.Text = "↑";
-            MoveUpButton.UseVisualStyleBackColor = true;
-            MoveUpButton.Click += MoveUpButton_Click;
-            // 
-            // MoveDownButton
-            // 
-            MoveDownButton.Location = new Point(285, 170);
-            MoveDownButton.Name = "MoveDownButton";
-            MoveDownButton.Size = new Size(30, 23);
-            MoveDownButton.TabIndex = 13;
-            MoveDownButton.Text = "↓";
-            MoveDownButton.UseVisualStyleBackColor = true;
-            MoveDownButton.Click += MoveDownButton_Click;
             // 
             // MainForm
             // 
@@ -431,5 +443,6 @@
         private ColumnHeader columnHeader6;
         private Button MoveDownButton;
         private Button MoveUpButton;
+        private Button SingleTest;
     }
 }

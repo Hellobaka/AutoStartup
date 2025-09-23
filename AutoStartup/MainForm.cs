@@ -505,5 +505,25 @@ namespace AutoStartup
             StartupList.Items[index + 1].Selected = true;
             File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(ConfigItem, Formatting.Indented));
         }
+
+        private void SingleTest_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = ProgramPath.Text,
+                    WorkingDirectory = new FileInfo(ProgramPath.Text).DirectoryName,
+                    Arguments = ProgramArg.Text,
+                    UseShellExecute = !HideWindowSelector.Checked,
+                    CreateNoWindow = HideWindowSelector.Checked
+                });
+                CurrentStatus = $"启动程序完成，未发生错误";
+            }
+            catch
+            {
+                CurrentStatus = $"启动程序失败，有错误发生，请检查路径是否正确";
+            }
+        }
     }
 }
