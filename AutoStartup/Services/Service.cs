@@ -18,7 +18,7 @@ namespace AutoStartup.Services
         Error
     }
 
-    public class Service(string name, string fileName, string args = "", string workingDir = "", bool hideWindow = false, int startDelayMs = 0, bool autoRestart = false, int restartDelayMs = 2000, int inMemoryLogLimit = 2000, bool logConsoleOutput = true)
+    public class Service(string name, string fileName, bool enabled = false, string args = "", string workingDir = "", bool hideWindow = false, int startDelayMs = 0, bool autoRestart = false, int restartDelayMs = 2000, int inMemoryLogLimit = 2000, bool logConsoleOutput = true)
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private ServiceStatus _serviceStatus = ServiceStatus.Stopped;
@@ -30,6 +30,8 @@ namespace AutoStartup.Services
         public string Arguments { get; } = args;
 
         public string WorkingDirectory { get; } = workingDir;
+
+        public bool Enabled { get; } = enabled;
 
         public bool HideWindow { get; } = hideWindow;
 

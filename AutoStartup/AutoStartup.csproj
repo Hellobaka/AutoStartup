@@ -24,4 +24,10 @@
     <Page Include="App.xaml" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="GongSolutions.WPF.DragDrop">
+      <HintPath>GongSolutions.WPF.DragDrop.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

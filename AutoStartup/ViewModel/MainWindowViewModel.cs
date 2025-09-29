@@ -16,7 +16,17 @@ namespace AutoStartup.ViewModel
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
-        public ObservableCollection<ServiceViewModel> Services { get; } = new();
+        public ObservableCollection<ServiceViewModel> Services { get; } = [
+                new ServiceViewModel(new Service("114", "514"){
+                    Status = ServiceStatus.Running
+                }, null),
+                new ServiceViewModel(new Service("测试服务1", "514"){
+                    Status = ServiceStatus.Stopped
+                }, null),
+                new ServiceViewModel(new Service("测试服务2", "514"){
+                    Status = ServiceStatus.Restarting
+                }, null),
+            ];
         public ServiceViewModel SelectedService { get; set; }
         public string ManualFilePath { get; set; }
         public string ManualArguments { get; set; }
@@ -33,7 +43,7 @@ namespace AutoStartup.ViewModel
             var name = Path.GetFileNameWithoutExtension(filePath);
             var workingDir = Path.GetDirectoryName(filePath);
             var svc = new Service(
-                name, filePath, "", workingDir,
+                name, filePath, false, "", workingDir,
                 hideWindow: true, autoRestart: false, logConsoleOutput: true, inMemoryLogLimit: 200
             );
             Services.Add(new ServiceViewModel(svc, vm => Services.Remove(vm)));
@@ -46,7 +56,7 @@ namespace AutoStartup.ViewModel
             var name = string.IsNullOrWhiteSpace(ManualName) ? Path.GetFileNameWithoutExtension(ManualFilePath) : ManualName;
             var workingDir = Path.GetDirectoryName(ManualFilePath);
             var svc = new Service(
-                name, ManualFilePath, ManualArguments ?? "", workingDir,
+                name, ManualFilePath, false, ManualArguments ?? "", workingDir,
                 hideWindow: true, autoRestart: false, logConsoleOutput: true, inMemoryLogLimit: 200
             );
             Services.Add(new ServiceViewModel(svc, vm => Services.Remove(vm)));
@@ -65,7 +75,7 @@ namespace AutoStartup.ViewModel
             foreach (var cfg in configs)
             {
                 var svc = new Service(
-                    cfg.Name, cfg.FileName, cfg.Arguments, cfg.WorkingDirectory,
+                    cfg.Name, cfg.FileName, false, cfg.Arguments, cfg.WorkingDirectory,
                     cfg.HideWindow, 0, cfg.AutoRestart, cfg.RestartDelayMs,
                     cfg.InMemoryLogLimit, cfg.LogConsoleOutput
                 );

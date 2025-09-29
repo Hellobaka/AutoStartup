@@ -3,6 +3,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
+    xmlns:hc="https://handyorg.github.io/handycontrol"
     xmlns:local="clr-namespace:AutoStartup"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodel="clr-namespace:AutoStartup.ViewModel"
@@ -19,63 +21,172 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="300" />
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="2*" />
         </Grid.ColumnDefinitions>
-        <!--  服务列表  -->
-        <ListBox
-            Grid.Column="0"
-            ItemsSource="{Binding Services}"
-            SelectedItem="{Binding SelectedService}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Margin="3" Orientation="Horizontal">
-                        <TextBlock FontWeight="Bold" Text="{Binding Name}" />
-                        <TextBlock Foreground="Gray" Text=" [" />
-                        <TextBlock Foreground="{Binding Status, Converter={StaticResource StatusColorConverter}}" Text="{Binding Status}" />
-                        <TextBlock Foreground="Gray" Text="]" />
-                        <Button
-                            Margin="5,0"
-                            Command="{Binding StartCommand}"
-                            Content="启动" />
-                        <Button
-                            Margin="5,0"
-                            Command="{Binding StopCommand}"
-                            Content="停止" />
-                        <Button
-                            Margin="5,0"
-                            Command="{Binding RestartCommand}"
-                            Content="重启" />
-                        <Button
-                            Margin="5,0"
-                            Command="{Binding DeleteCommand}"
-                            Content="删除" />
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-        <!--  服务详情  -->
-        <Grid Grid.Column="1" Margin="10">
+        <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="2*" />
-                <RowDefinition Height="*" />
+                <RowDefinition />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+            <ListBox
+                x:Name="listBox"
+                Grid.Column="0"
+                Margin="5,5,5,0"
+                dd:DragDrop.IsDragSource="True"
+                dd:DragDrop.IsDropTarget="True"
+                ItemsSource="{Binding Services}"
+                SelectedItem="{Binding SelectedService}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid
+                            Margin="3"
+                            HorizontalAlignment="Stretch"
+                            Tag="{Binding}">
+                            <Grid.ContextMenu>
+                                <ContextMenu DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
+                                    <MenuItem Header="测试" />
+                                    <Separator />
+                                    <MenuItem Header="删除" />
+                                </ContextMenu>
+                            </Grid.ContextMenu>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal">
+                                <Rectangle
+                                    Width="7"
+                                    Height="7"
+                                    Margin="4,0"
+                                    VerticalAlignment="Center"
+                                    Fill="LimeGreen"
+                                    RadiusX="100"
+                                    RadiusY="100"
+                                    Stroke="White"
+                                    StrokeThickness="1"
+                                    Visibility="{Binding Service.Enabled, Converter={StaticResource Boolean2VisibilityConverter}}" />
+                                <Rectangle
+                                    Width="7"
+                                    Height="7"
+                                    Margin="4,0"
+                                    VerticalAlignment="Center"
+                                    Fill="Red"
+                                    RadiusX="100"
+                                    RadiusY="100"
+                                    Stroke="White"
+                                    StrokeThickness="1"
+                                    Visibility="{Binding Service.Enabled, Converter={StaticResource Boolean2VisibilityReConverter}}" />
+                                <TextBlock
+                                    Width="{Binding ActualWidth, ElementName=listBox}"
+                                    Margin="5,0,0,0"
+                                    FontWeight="Bold"
+                                    Text="{Binding Name}" />
+                            </StackPanel>
+                            <StackPanel Grid.Row="1" Orientation="Horizontal">
+                                <Polygon
+                                    VerticalAlignment="Center"
+                                    Fill="LimeGreen"
+                                    Points="1,1 13,7.5 1,14"
+                                    Stroke="Black"
+                                    StrokeThickness="1"
+                                    Visibility="{Binding Running, Converter={StaticResource Boolean2VisibilityConverter}}" />
+                                <TextBlock
+                                    Margin="5,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Text="运行中"
+                                    Visibility="{Binding Running, Converter={StaticResource Boolean2VisibilityConverter}}" />
+                                <Rectangle
+                                    Width="14"
+                                    Height="14"
+                                    VerticalAlignment="Center"
+                                    Fill="Red"
+                                    Stroke="Black"
+                                    StrokeThickness="1"
+                                    Visibility="{Binding Stopped, Converter={StaticResource Boolean2VisibilityConverter}}" />
+                                <TextBlock
+                                    Margin="5,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Text="已停止"
+                                    Visibility="{Binding Stopped, Converter={StaticResource Boolean2VisibilityConverter}}" />
+                            </StackPanel>
+                            <StackPanel
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Orientation="Horizontal">
+                                <Button
+                                    hc:IconElement.Geometry="{StaticResource StartGeometry}"
+                                    hc:IconElement.Height="10"
+                                    hc:IconElement.Width="10"
+                                    Background="{StaticResource PrimaryBrush}"
+                                    Foreground="White"
+                                    Style="{StaticResource ButtonIconCircular}" />
+                                <Button
+                                    Margin="3,0,0,0"
+                                    hc:IconElement.Geometry="{StaticResource StopGeometry}"
+                                    hc:IconElement.Height="10"
+                                    hc:IconElement.Width="10"
+                                    Background="{StaticResource DangerBrush}"
+                                    Foreground="White"
+                                    Style="{StaticResource ButtonIconCircular}" />
+                                <Button
+                                    Margin="3,0,0,0"
+                                    hc:IconElement.Geometry="{StaticResource RotateRightGeometry}"
+                                    Style="{StaticResource ButtonIconCircular}" />
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Grid Grid.Row="1" Margin="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Button
+                    Margin="0,0,5,0"
+                    HorizontalAlignment="Stretch"
+                    Content="全部启动"
+                    Style="{StaticResource ButtonPrimary}" />
+                <Button
+                    Grid.Column="1"
+                    Margin="5,0,0,0"
+                    HorizontalAlignment="Stretch"
+                    Content="全部终止" />
+            </Grid>
+        </Grid>
+
+        <Grid Grid.Column="1" Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <GroupBox
+            <Expander
                 Grid.Row="0"
                 Margin="0,0,0,5"
-                Header="操作日志">
+                Header="操作日志"
+                IsExpanded="False">
                 <ListBox
                     FontFamily="Consolas"
                     FontSize="13"
                     ItemsSource="{Binding SelectedService.OperationLogs}" />
-            </GroupBox>
-            <GroupBox Grid.Row="1" Header="控制台输出">
+            </Expander>
+            <Expander
+                Grid.Row="1"
+                Header="控制台输出"
+                IsExpanded="False">
                 <ListBox
                     FontFamily="Consolas"
                     FontSize="13"
                     ItemsSource="{Binding SelectedService.ConsoleOutputs}" />
-            </GroupBox>
+            </Expander>
             <!--  手动添加服务  -->
             <GroupBox
                 Grid.Row="2"

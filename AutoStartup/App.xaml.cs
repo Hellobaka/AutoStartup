@@ -47,7 +47,6 @@ namespace AutoStartup
             if (Shared.WPFInstance == null)
             {
                 RunApp();
-
                 return;
             }
             Shared.WPFInstance.Dispatcher.BeginInvoke(new Action(() =>
@@ -66,7 +65,6 @@ namespace AutoStartup
             if (Shared.WPFInstance == null)
             {
                 RunApp();
-
                 return;
             }
             Shared.WPFInstance.Dispatcher.BeginInvoke(new Action(() =>
@@ -94,7 +92,6 @@ namespace AutoStartup
                 var app = new App
                 {
                     StartupUri = new("pack://application:,,,/MainWindow.xaml"),
-                    ShutdownMode = ShutdownMode.OnExplicitShutdown
                 };
                 app.InitializeComponent();
 
