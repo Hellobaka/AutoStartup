@@ -1,7 +1,10 @@
-﻿using System.Configuration;
-using System.Data;
+﻿using AutoStartup.Services;
+using Microsoft.Win32;
+using NLog;
+using NLog.Config;
+using NLog.Targets;
+using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
 
 namespace AutoStartup
 {
@@ -11,7 +14,7 @@ namespace AutoStartup
     public partial class App : System.Windows.Application
     {
         [STAThread]
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             Shared.AppMutex = new Mutex(true, Shared.AppMutexName, out bool success);
             if (!success)
@@ -22,14 +25,34 @@ namespace AutoStartup
 
             try
             {
+                Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
                 TaskbarHelper.OnTaskbarDoubleClicked += TaskbarHelper_OnTaskbarDoubleClicked;
                 IPCNotice.OnActivateRequested += IPCNotice_OnActivateRequested;
-                Shared.Maintenance = args.Length != 0;
+                Shared.Maintenance = args.Length == 0;
                 TaskbarHelper.BuildTaskBar();
                 IPCNotice.StartPipeServer();
-                if (!Shared.Maintenance)
+                ServiceManager serviceManager = new();
+                bool loadService = serviceManager.LoadFromFile();
+                if (Shared.Maintenance)
                 {
                     RunApp();
+                }
+                else
+                {
+                    if (!CheckHasStartupRegistry())
+                    {
+                        AddStartupProgram("AutoStartup", System.Reflection.Assembly.GetExecutingAssembly().Location + " -o");
+                    }
+                    if (loadService)
+                    {
+                        await serviceManager.StartAllAsync();
+                    }
+                    else
+                    {
+                        AutoStartup.MainWindow.ShowError("加载服务列表失败，请手动启动以修复问题。");
+                        return;
+                    }
                 }
 
                 Shared.QuitSignal.WaitOne();
@@ -100,6 +123,19 @@ namespace AutoStartup
             });
             staThread.SetApartmentState(ApartmentState.STA);
             staThread.Start();
+        }
+
+        private static bool CheckHasStartupRegistry() => Registry.CurrentUser?.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true)?.GetValueNames().Any(x => x == "AutoStartup") ?? false;
+
+        private static void AddStartupProgram(string name, string path)
+        {
+            RegistryKey? rk = Registry.CurrentUser?.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+            if (rk == null)
+            {
+                AutoStartup.MainWindow.ShowError("自启动项添加失败，请检查运行权限。");
+                return;
+            }
+            rk.SetValue(name, path);
         }
     }
 }
