@@ -109,5 +109,10 @@ namespace AutoStartup
                 action.Invoke();
             }
         }
+
+        public static void ShowTrayInfo(string title, string msg, ToolTipIcon info)
+        {
+            NotifyIcon.ShowBalloonTip(3000, title, msg, info);
+        }
     }
 }

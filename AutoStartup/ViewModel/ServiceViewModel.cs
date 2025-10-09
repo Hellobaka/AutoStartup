@@ -37,6 +37,8 @@ namespace AutoStartup.ViewModel
 
         public ICommand DeleteCommand { get; }
 
+        public Dispatcher UIDispatcher { get; set; }
+
         public ServiceViewModel(Service svc, Action<ServiceViewModel> onDelete)
         {
             Service = svc;
@@ -51,15 +53,45 @@ namespace AutoStartup.ViewModel
                 OnPropertyChanged(nameof(Running));
                 OnPropertyChanged(nameof(Stopped));
             };
-            Service.OutputReceived += (n, line) => Dispatcher.CurrentDispatcher.Invoke(() => ConsoleOutputs.Add(line));
-            // 你可以在Service内部加事件，或者这里订阅NLog日志
+            foreach(var item in Service.InMemoryOperationLogs)
+            {
+                OperationLogs.Add(item);
+            }
+            foreach(var item in Service.InMemoryLogs)
+            {
+                ConsoleOutputs.Add(item);
+            }
+
+            Service.OperationReceived += (n, line) =>
+            {
+                MainWindow.UIDispatcher.Invoke(() =>
+                {
+                    OperationLogs.Add(line);
+                    while (OperationLogs.Count > Service.InMemoryLogLimit)
+                    {
+                        OperationLogs.RemoveAt(0);
+                    }
+                });
+            };
+
+            Service.OutputReceived += (n, line) =>
+            {
+                MainWindow.UIDispatcher.Invoke(() =>
+                {
+                    ConsoleOutputs.Add(line);
+                    while (ConsoleOutputs.Count > Service.InMemoryLogLimit)
+                    {
+                        ConsoleOutputs.RemoveAt(0);
+                    }
+                });
+            };
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void OnPropertyChanged(string propertyName)
         {
-            PropertyChanged?.Invoke(propertyName, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
