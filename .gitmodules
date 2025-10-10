@@ -1,0 +1,3 @@
+[submodule "AnsiColorParser"]
+	path = AnsiColorParser
+	url = https://github.com/Hellobaka/AnsiColorParser.git

@@ -5,6 +5,8 @@ VisualStudioVersion = 17.4.33122.133
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoStartup", "AutoStartup\AutoStartup.csproj", "{01DCBCF2-84A3-4827-AB20-30FA2D197B17}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnsiColorParser", "AnsiColorParser\AnsiColorParser.csproj", "{6825053B-607C-675A-B455-A5690BAA3A55}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{01DCBCF2-84A3-4827-AB20-30FA2D197B17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01DCBCF2-84A3-4827-AB20-30FA2D197B17}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01DCBCF2-84A3-4827-AB20-30FA2D197B17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6825053B-607C-675A-B455-A5690BAA3A55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6825053B-607C-675A-B455-A5690BAA3A55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6825053B-607C-675A-B455-A5690BAA3A55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6825053B-607C-675A-B455-A5690BAA3A55}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
