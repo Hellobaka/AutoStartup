@@ -10,7 +10,7 @@
     xmlns:local="clr-namespace:AutoStartup"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodel="clr-namespace:AutoStartup.ViewModel"
-    Title="MainWindow"
+    Title="服务管理"
     Width="1000"
     Height="600"
     d:DataContext="{d:DesignInstance Type=viewmodel:MainWindowViewModel}"

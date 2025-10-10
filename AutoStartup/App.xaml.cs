@@ -23,13 +23,13 @@ namespace AutoStartup
             try
             {
                 Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                Shared.IsElevated = IsElevated();
+                Shared.Maintenance = args.Length == 0;
 
                 ServiceManager serviceManager = new();
 
-                Shared.IsElevated = IsElevated();
                 TaskbarHelper.OnTaskbarDoubleClicked += TaskbarHelper_OnTaskbarDoubleClicked;
                 IPCNotice.OnActivateRequested += IPCNotice_OnActivateRequested;
-                Shared.Maintenance = args.Length == 0;
                 TaskbarHelper.BuildTaskBar();
                 IPCNotice.StartPipeServer();
                 bool loadService = serviceManager.LoadFromFile();
@@ -49,7 +49,7 @@ namespace AutoStartup
                     }
                     else
                     {
-                        AutoStartup.MainWindow.ShowError("加载服务列表失败，请手动启动以修复问题。");
+                        System.Windows.MessageBox.Show("加载服务列表失败，请手动启动以修复问题。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
                         return;
                     }
                 }
