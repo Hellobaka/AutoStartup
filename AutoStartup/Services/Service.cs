@@ -122,6 +122,8 @@ namespace AutoStartup.Services
 
         public int StartDelayMs { get; set; }
 
+        public Dictionary<string, string> EnvironmentVariables { get; set; } = [];
+
         [JsonIgnore]
         public ServiceStatus Status
         {
@@ -209,6 +211,7 @@ namespace AutoStartup.Services
                    $"启动延迟(ms)：{StartDelayMs}; " +
                    $"自动重启：{AutoRestart}; " +
                    $"重启延迟(ms)：{RestartDelayMs}; " +
+                   $"环境变量：{string.Join(',', EnvironmentVariables.Select(x => $"{x.Key}={x.Value}"))}; " +
                    $"日志输出：{LogConsoleOutput}; " +
                    $"内存日志限制：{InMemoryLogLimit}; ";
         }
@@ -252,7 +255,7 @@ namespace AutoStartup.Services
 
         private void AddOperationLog(string log, LogLevel logLevel)
         {
-            string fakeNLog = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}][{logLevel}] [Operation]{log}";
+            string fakeNLog = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}][{logLevel}] {log}";
             OperationReceived?.Invoke(Name, fakeNLog);
             AddLogLine(_inMemoryOperationLogs, fakeNLog);
             _logger.Log(logLevel, "[Operation]" + log);
@@ -291,8 +294,11 @@ namespace AutoStartup.Services
                         RedirectStandardOutput = true,
                         RedirectStandardError = true,
                         CreateNoWindow = HideWindow,
-                        EnvironmentVariables = { }
                     };
+                    foreach (var item in EnvironmentVariables)
+                    {
+                        psi.EnvironmentVariables.Add(item.Key, item.Value);
+                    }
                     _process = new Process { StartInfo = psi, EnableRaisingEvents = true };
                     _process.OutputDataReceived += (s, e) => { if (e.Data != null) { OnOutputReceived(e.Data); } };
                     _process.ErrorDataReceived += (s, e) => { if (e.Data != null) { OnErrorReceived(e.Data); } };
