@@ -37,14 +37,12 @@ namespace AutoStartup.ViewModel
 
         public ICommand DeleteCommand { get; }
 
-        public Dispatcher UIDispatcher { get; set; }
-
         public ServiceViewModel(Service svc, Action<ServiceViewModel> onDelete)
         {
             Service = svc;
-            StartCommand = new RelayCommand(_ => Service.StartAsync());
-            StopCommand = new RelayCommand(_ => Service.StopAsync());
-            RestartCommand = new RelayCommand(_ => Service.RestartAsync());
+            StartCommand = new RelayCommand(async _ => await Service.StartAsync());
+            StopCommand = new RelayCommand(async _ => await Service.StopAsync());
+            RestartCommand = new RelayCommand(async _ => await Service.RestartAsync());
             DeleteCommand = new RelayCommand(_ => onDelete?.Invoke(this));
             // 状态变化通知
             Service.StatusChanged += s =>

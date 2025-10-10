@@ -18,8 +18,10 @@ namespace AutoStartup.ViewModel
             WorkingDirectoryBrowserCommand = new RelayCommand(_ => BrowserWorkingDirectory());
             foreach (var item in ServiceManager.Instance.ListServices())
             {
-                Services.Add(new ServiceViewModel(item, vm => Services.Remove(vm)));
+                Services.Add(new ServiceViewModel(item, RemoveService));
             }
+
+            Services.CollectionChanged += Services_CollectionChanged;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -62,7 +64,7 @@ namespace AutoStartup.ViewModel
                 MainWindow.ShowError("服务名称已存在，请更换");
                 return;
             }
-            SelectedService = new ServiceViewModel(service, vm => Services.Remove(vm));
+            SelectedService = new ServiceViewModel(service, RemoveService);
             Services.Add(SelectedService);
             ServiceManager.Instance.AddService(service);
             if (ServiceManager.Instance.SaveToFile())
@@ -106,7 +108,7 @@ namespace AutoStartup.ViewModel
                 name, filePath, true, "", workingDir,
                 hideWindow: false, autoRestart: false, logConsoleOutput: true, inMemoryLogLimit: 200
             );
-            SelectedService = new ServiceViewModel(svc, vm => Services.Remove(vm));
+            SelectedService = new ServiceViewModel(svc, RemoveService);
             PreviewService = svc;
         }
 
@@ -149,6 +151,32 @@ namespace AutoStartup.ViewModel
             if (dialog.ShowDialog() ?? false)
             {
                 PreviewService.WorkingDirectory = dialog.FolderName;
+            }
+        }
+
+        private void Services_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Move)
+            {
+                ServiceManager.Instance.SaveToFile();
+            }
+        }
+
+        private void RemoveService(ServiceViewModel service)
+        {
+            if (MainWindow.ShowConfirm("确定要删除此服务吗？此操作不可逆"))
+            {
+                Services.Remove(service);
+                ServiceManager.Instance.RemoveService(service.Name);
+                if (!ServiceManager.Instance.SaveToFile())
+                {
+                    MainWindow.ShowError("保存失败，请检查日志获取错误原因");
+                }
+                if (SelectedService == service)
+                {
+                    SelectedService = null;
+                    PreviewService = new("", "");
+                }
             }
         }
     }

@@ -4,7 +4,6 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Input;
 using System.Windows.Threading;
 using DataFormats = System.Windows.DataFormats;
 using DragDropEffects = System.Windows.DragDropEffects;
@@ -17,6 +16,8 @@ namespace AutoStartup
     /// </summary>
     public partial class MainWindow : Window
     {
+        // TODO: 实现控制台文本自动切割，ANSI颜色
+        // TODO: 验证后台服务管理逻辑
         public MainWindow()
         {
             InitializeComponent();
@@ -39,6 +40,11 @@ namespace AutoStartup
         public static void ShowInfo(string msg)
         {
             HandyControl.Controls.MessageBox.Show(msg, "Info", icon: MessageBoxImage.Information);
+        }
+
+        public static bool ShowConfirm(string msg)
+        {
+            return HandyControl.Controls.MessageBox.Show(msg, "Info", MessageBoxButton.YesNo, icon: MessageBoxImage.Information) == MessageBoxResult.Yes;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

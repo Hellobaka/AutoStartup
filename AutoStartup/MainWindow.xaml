@@ -2,6 +2,7 @@
     x:Class="AutoStartup.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:AutoStartup.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
     xmlns:hc="https://handyorg.github.io/handycontrol"
@@ -43,12 +44,11 @@
                         <Grid
                             Margin="3"
                             HorizontalAlignment="Stretch"
+                            Background="Transparent"
                             Tag="{Binding}">
                             <Grid.ContextMenu>
                                 <ContextMenu DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
-                                    <MenuItem Header="测试" />
-                                    <Separator />
-                                    <MenuItem Header="删除" />
+                                    <MenuItem Command="{Binding DeleteCommand}" Header="删除" />
                                 </ContextMenu>
                             </Grid.ContextMenu>
                             <Grid.RowDefinitions>
@@ -188,17 +188,17 @@
                         Margin="10"
                         Orientation="Vertical"
                         Spacing="10">
-                        <local:ControlWithTitle Title="是否启用：" TitleWidth="{StaticResource GlobalTitleWidth}">
+                        <controls:ControlWithTitle Title="是否启用：" TitleWidth="{StaticResource GlobalTitleWidth}">
                             <ToggleButton
                                 Width="40"
                                 HorizontalAlignment="Left"
                                 IsChecked="{Binding PreviewService.Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                 Style="{StaticResource ToggleButtonSwitch}" />
-                        </local:ControlWithTitle>
-                        <local:ControlWithTitle Title="名称：" TitleWidth="{StaticResource GlobalTitleWidth}">
+                        </controls:ControlWithTitle>
+                        <controls:ControlWithTitle Title="名称：" TitleWidth="{StaticResource GlobalTitleWidth}">
                             <TextBox Text="{Binding PreviewService.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        </local:ControlWithTitle>
-                        <local:ControlWithTitle Title="路径：" TitleWidth="{StaticResource GlobalTitleWidth}">
+                        </controls:ControlWithTitle>
+                        <controls:ControlWithTitle Title="路径：" TitleWidth="{StaticResource GlobalTitleWidth}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
@@ -213,11 +213,11 @@
                                     IsEnabled="{Binding PreviewService, Converter={StaticResource Object2BooleanConverter}}"
                                     Style="{StaticResource ButtonPrimary}" />
                             </Grid>
-                        </local:ControlWithTitle>
-                        <local:ControlWithTitle Title="参数：" TitleWidth="{StaticResource GlobalTitleWidth}">
+                        </controls:ControlWithTitle>
+                        <controls:ControlWithTitle Title="参数：" TitleWidth="{StaticResource GlobalTitleWidth}">
                             <TextBox Text="{Binding PreviewService.Arguments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        </local:ControlWithTitle>
-                        <local:ControlWithTitle Title="工作目录：" TitleWidth="{StaticResource GlobalTitleWidth}">
+                        </controls:ControlWithTitle>
+                        <controls:ControlWithTitle Title="工作目录：" TitleWidth="{StaticResource GlobalTitleWidth}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
@@ -232,34 +232,37 @@
                                     IsEnabled="{Binding PreviewService, Converter={StaticResource Object2BooleanConverter}}"
                                     Style="{StaticResource ButtonPrimary}" />
                             </Grid>
-                        </local:ControlWithTitle>
-                        <local:ControlWithTitle Title="启动前延时 (ms)：" TitleWidth="{StaticResource GlobalTitleWidth}">
+                        </controls:ControlWithTitle>
+                        <controls:ControlWithTitle Title="启动前延时 (ms)：" TitleWidth="{StaticResource GlobalTitleWidth}">
                             <TextBox Text="{Binding PreviewService.StartDelayMs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        </local:ControlWithTitle>
-                        <local:ControlWithTitle Title="重启前延时 (ms)：" TitleWidth="{StaticResource GlobalTitleWidth}">
+                        </controls:ControlWithTitle>
+                        <controls:ControlWithTitle Title="重启前延时 (ms)：" TitleWidth="{StaticResource GlobalTitleWidth}">
                             <TextBox Text="{Binding PreviewService.RestartDelayMs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        </local:ControlWithTitle>
-                        <local:ControlWithTitle Title="隐藏窗口：" TitleWidth="{StaticResource GlobalTitleWidth}">
+                        </controls:ControlWithTitle>
+                        <controls:ControlWithTitle Title="环境变量：" TitleWidth="{StaticResource GlobalTitleWidth}">
+                            <controls:EditableListBox_Dict_String_String ItemSource="{Binding PreviewService.EnvironmentVariables, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        </controls:ControlWithTitle>
+                        <controls:ControlWithTitle Title="隐藏窗口：" TitleWidth="{StaticResource GlobalTitleWidth}">
                             <ToggleButton
                                 Width="40"
                                 HorizontalAlignment="Left"
                                 IsChecked="{Binding PreviewService.HideWindow, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                 Style="{StaticResource ToggleButtonSwitch}" />
-                        </local:ControlWithTitle>
-                        <local:ControlWithTitle Title="自动重启：" TitleWidth="{StaticResource GlobalTitleWidth}">
+                        </controls:ControlWithTitle>
+                        <controls:ControlWithTitle Title="自动重启：" TitleWidth="{StaticResource GlobalTitleWidth}">
                             <ToggleButton
                                 Width="40"
                                 HorizontalAlignment="Left"
                                 IsChecked="{Binding PreviewService.AutoRestart, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                 Style="{StaticResource ToggleButtonSwitch}" />
-                        </local:ControlWithTitle>
-                        <local:ControlWithTitle Title="记录控制台输出：" TitleWidth="{StaticResource GlobalTitleWidth}">
+                        </controls:ControlWithTitle>
+                        <controls:ControlWithTitle Title="记录控制台输出：" TitleWidth="{StaticResource GlobalTitleWidth}">
                             <ToggleButton
                                 Width="40"
                                 HorizontalAlignment="Left"
                                 IsChecked="{Binding PreviewService.LogConsoleOutput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                 Style="{StaticResource ToggleButtonSwitch}" />
-                        </local:ControlWithTitle>
+                        </controls:ControlWithTitle>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
@@ -304,9 +307,9 @@
                     Grid.Row="1"
                     Margin="0,0,0,5"
                     Header="操作日志"
-                    IsExpanded="False">
+                    IsExpanded="True">
                     <ListBox
-                        FontFamily="Consolas"
+                        FontFamily="Consolas, Microsoft YaHei, 微软雅黑"
                         FontSize="13"
                         ItemsSource="{Binding SelectedService.OperationLogs}" />
                 </Expander>
@@ -315,7 +318,7 @@
                     Header="控制台输出"
                     IsExpanded="False">
                     <ListBox
-                        FontFamily="Consolas"
+                        FontFamily="Consolas, Microsoft YaHei, 微软雅黑"
                         FontSize="13"
                         ItemsSource="{Binding SelectedService.ConsoleOutputs}" />
                 </Expander>
