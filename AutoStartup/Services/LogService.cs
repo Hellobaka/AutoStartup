@@ -50,6 +50,7 @@ namespace AutoStartup.Services
                 string line = reader.ReadLine() ?? string.Empty;
                 if (line.Contains(pattern))
                 {
+                    line = line.Replace(pattern, string.Empty);
                     nLogs.AddLast(line);
                     if (nLogs.Count > lines)
                     {
