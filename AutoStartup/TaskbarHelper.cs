@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using AutoStartup.Services;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace AutoStartup
 {
@@ -47,8 +49,8 @@ namespace AutoStartup
                     menu.Items.Add(new ToolStripMenuItem { Text = $"框架版本: {"1.0.0"}" });
                     menu.Items.Add("退出", null, ExitItem_Click);
 
-                    NotifyIcon.Text = $"共 {0} 个服务; 正在运行 {0} 个服务";
                     NotifyIcon.Visible = true;
+                    NotifyIcon.MouseDown += NotifyIcon_MouseDown;
                     NotifyIcon.DoubleClick += NotifyIcon_DoubleClick;
                     RebuildTaskBarMenu();
                     Application.Run();
@@ -58,9 +60,17 @@ namespace AutoStartup
             }
         }
 
+        private static void NotifyIcon_MouseDown(object? sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                RebuildTaskBarMenu();
+            }
+        }
+
         private static void ShowUI_Click(object? sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            OnTaskbarDoubleClicked?.Invoke();
         }
 
         private static void ExitItem_Click(object? sender, EventArgs e)
@@ -76,26 +86,60 @@ namespace AutoStartup
             Task.Run(() => OnTaskbarDoubleClicked?.Invoke());
         }
 
-        private static void StopAllItem_Click(object? sender, EventArgs e)
+        private static async void StopAllItem_Click(object? sender, EventArgs e)
         {
-
+            await ServiceManager.Instance.StopAllAsync();
         }
 
-        private static void StartAllItem_Click(object? sender, EventArgs e)
+        private static async void StartAllItem_Click(object? sender, EventArgs e)
         {
-
+            await ServiceManager.Instance.StartAllAsync();
         }
 
         public static void RebuildTaskBarMenu()
         {
-            NotifyIcon.Text = $"共 {0} 个服务; 正在运行 {0} 个服务";
-            TotalServiceDisplay.Text = $"共 {0} 个服务";
-            RunningServiceDisplay.Text = $"正在运行 {0} 个服务";
+            int total = ServiceManager.Instance.TotalCount, running = ServiceManager.Instance.RunningCount;
+            NotifyIcon.Text = $"共 {total} 个服务; 正在运行 {running} 个服务";
+            TotalServiceDisplay.Text = $"共 {total} 个服务";
+            RunningServiceDisplay.Text = $"正在运行 {running} 个服务";
             TaskBarMenuParent.DropDownItems.Clear();
 
+            foreach(var item in ServiceManager.Instance.ListServices())
+            {
+                ToolStripMenuItem subService = new(item.Name);
+                ToolStripMenuItem startService = new("启动");
+                startService.Enabled = item.Status != ServiceStatus.Running;
+                startService.Tag = item;
+                startService.Click += StartService_Click;
+                ToolStripMenuItem stopService = new("终止");
+                stopService.Enabled = item.Status != ServiceStatus.Stopped;
+                stopService.Tag = item;
+                stopService.Click += StopService_Click;
+
+                subService.DropDownItems.Add(startService);
+                subService.DropDownItems.Add(stopService);
+
+                TaskBarMenuParent.DropDownItems.Add(subService);
+            }
             TaskBarMenuParent.DropDownItems.Add("-");
             TaskBarMenuParent.DropDownItems.Add("启用所有", null, StartAllItem_Click);
             TaskBarMenuParent.DropDownItems.Add("终止所有", null, StopAllItem_Click);
+        }
+
+        private static async void StopService_Click(object? sender, EventArgs e)
+        {
+            if (sender is ToolStripMenuItem item && item.Tag is Service service)
+            {
+                await service.StopAsync();
+            }
+        }
+
+        private static async void StartService_Click(object? sender, EventArgs e)
+        {
+            if (sender is ToolStripMenuItem item && item.Tag is Service service)
+            {
+                await service.StartAsync();
+            }
         }
 
         public static void Invoke(Action action)

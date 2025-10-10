@@ -25,6 +25,10 @@ namespace AutoStartup.Services
 
         private bool Reloading { get; set; } = false;
 
+        public int TotalCount => _services.Count(x => x.Enabled);
+
+        public int RunningCount => _services.Count(s => s.Enabled && s.Status == ServiceStatus.Running);
+
         public bool AddService(Service service, bool add = false)
         {
             lock (serviceMaintenanceLock)

@@ -97,14 +97,7 @@ namespace AutoStartup
                 {
                     return;
                 }
-                else if (window.IsVisible)
-                {
-                    window.Hide();
-                }
-                else
-                {
-                    window.Show();
-                }
+                window.Show();
             }));
         }
 
