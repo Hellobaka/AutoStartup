@@ -33,16 +33,16 @@ namespace AutoStartup
                 TaskbarHelper.BuildTaskBar();
                 IPCNotice.StartPipeServer();
                 bool loadService = serviceManager.LoadFromFile();
+                if (!CheckHasStartupRegistry())
+                {
+                    AddStartupProgram("AutoStartup", Environment.ProcessPath + " -o");
+                }
                 if (Shared.Maintenance)
                 {
                     RunApp();
                 }
                 else
                 {
-                    if (!CheckHasStartupRegistry())
-                    {
-                        AddStartupProgram("AutoStartup", Environment.ProcessPath + " -o");
-                    }
                     if (loadService)
                     {
                         await serviceManager.StartAllAsync();
