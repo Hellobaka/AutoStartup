@@ -11,3 +11,6 @@
 - 记录操作日志与控制台输出
 - 隐藏控制台窗口
 - 自动加入自启动注册表
+
+<img width="986" height="593" alt="image" src="https://github.com/user-attachments/assets/eaa88b48-c25c-4d5e-ac96-210ddbff6030" />
+
