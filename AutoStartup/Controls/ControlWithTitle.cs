@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace AutoStartup
+namespace AutoStartup.Controls
 {
     /// <summary>
     /// ToggleButtonWithTitle.xaml 的交互逻辑
