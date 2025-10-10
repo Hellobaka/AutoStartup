@@ -66,7 +66,7 @@ namespace AutoStartup.ViewModel
             }
             SelectedService = new ServiceViewModel(service, RemoveService);
             Services.Add(SelectedService);
-            ServiceManager.Instance.AddService(service);
+            ServiceManager.Instance.AddService(service, true);
             if (ServiceManager.Instance.SaveToFile())
             {
                 MainWindow.ShowInfo("保存成功");

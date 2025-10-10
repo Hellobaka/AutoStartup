@@ -1,9 +1,14 @@
-﻿using AutoStartup.Services;
+﻿using AnsiColorParser;
+using AutoStartup.Services;
 using AutoStartup.ViewModel;
+using NLog;
+using System.Collections.Specialized;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Documents;
+using System.Windows.Media;
 using System.Windows.Threading;
 using DataFormats = System.Windows.DataFormats;
 using DragDropEffects = System.Windows.DragDropEffects;
@@ -16,7 +21,6 @@ namespace AutoStartup
     /// </summary>
     public partial class MainWindow : Window
     {
-        // TODO: 实现控制台文本自动切割，ANSI颜色
         // TODO: 验证后台服务管理逻辑
         public MainWindow()
         {
@@ -105,14 +109,137 @@ namespace AutoStartup
                     vm.ConsoleOutputs.CollectionChanged += ConsoleOutputs_CollectionChanged;
                 }
             }
+            OperationLogDisplay.Document.Blocks.Clear();
+            ConsoleOutputDisplay.Document.Blocks.Clear();
+
+            foreach(var item in ViewModel?.SelectedService?.OperationLogs ?? [])
+            {
+                AddOperationLogLine(item);
+            }
+            foreach(var item in ViewModel?.SelectedService?.ConsoleOutputs ?? [])
+            {
+                AddConsoleOutputLine(item);
+            }
         }
 
-        private void OperationLogs_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void OperationLogs_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
+            if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                for (int i = 0; i < e.OldItems?.Count; i++)
+                {
+                    OperationLogDisplay.Document.Blocks.Remove(OperationLogDisplay.Document.Blocks.FirstBlock);
+                }
+            }
+            else if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                if (e.NewItems != null && e.NewItems.Count > 0)
+                {
+                    foreach((LogLevel, string) line in e.NewItems)
+                    {
+                        AddOperationLogLine(line);
+                    }
+                }
+            }
         }
 
-        private void ConsoleOutputs_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void AddOperationLogLine((LogLevel logLevel, string log) line)
         {
+            Paragraph paragraph = new();
+            paragraph.LineHeight = 12;
+            Run run = new(line.log)
+            {
+                Foreground = line.logLevel.Name switch
+                {
+                    "Trace" => System.Windows.Media.Brushes.Gray,
+                    "Debug" => System.Windows.Media.Brushes.LightGray,
+                    "Info" => System.Windows.Media.Brushes.Green,
+                    "Warn" => System.Windows.Media.Brushes.Orange,
+                    "Error" => System.Windows.Media.Brushes.Red,
+                    "Fatal" => System.Windows.Media.Brushes.DarkRed,
+                    _ => System.Windows.Media.Brushes.Black,
+                }
+            };
+            paragraph.Inlines.Add(run);
+            OperationLogDisplay.Document.Blocks.Add(paragraph);
+            OperationLogDisplay.ScrollToEnd();
+        }
+
+        private void AddConsoleOutputLine(string line)
+        {
+            var ansiParts = ColorParser.SplitAnsi(line);
+            if (ansiParts.Length == 0)
+            {
+                return;
+            }
+            Paragraph paragraph = new();
+            paragraph.LineHeight = 12;
+            Run run = new();
+            foreach (var item in ansiParts)
+            {
+                if (item.IsColorAnsi())
+                {
+                    if (!ColorParser.TryParse(item, out var color)
+                        || !color.Valid)
+                    {
+                        return;
+                    }
+                    var brush = new SolidColorBrush(new System.Windows.Media.Color()
+                    {
+                        A = 255,
+                        R = color.Color.R,
+                        G = color.Color.G,
+                        B = color.Color.B
+                    });
+                    if (color.IsBackgroundColor)
+                    {
+                        run.Background = brush;
+                    }
+                    else if (color.Reset)
+                    {
+                        run.Foreground = System.Windows.Media.Brushes.Black;
+                        run.Background = System.Windows.Media.Brushes.Transparent;
+                    }
+                    else
+                    {
+                        run.Foreground = brush;
+                    }
+                    continue;
+                }
+                else
+                {
+                    run.Text = item;
+                    paragraph.Inlines.Add(run);
+                    Run recreateRun = new();
+                    recreateRun.Background = run.Background?.Clone();
+                    recreateRun.Foreground = run.Foreground?.Clone();
+
+                    run = recreateRun;
+                }
+            }
+            ConsoleOutputDisplay.Document.Blocks.Add(paragraph);
+            ConsoleOutputDisplay.ScrollToEnd();
+        }
+
+        private void ConsoleOutputs_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                for (int i = 0; i < e.OldItems?.Count; i++)
+                {
+                    ConsoleOutputDisplay.Document.Blocks.Remove(ConsoleOutputDisplay.Document.Blocks.FirstBlock);
+                }
+            }
+            else if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                if (e.NewItems != null && e.NewItems.Count > 0)
+                {
+                    foreach (string line in e.NewItems)
+                    {
+                        AddConsoleOutputLine(line);
+                    }
+                }
+            }
         }
 
         private void ExtraServiceButton_Click(object sender, RoutedEventArgs e)

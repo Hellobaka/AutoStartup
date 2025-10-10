@@ -27,12 +27,15 @@ namespace AutoStartup.Services
 
         private bool Reloading { get; set; } = false;
 
-        public bool AddService(Service service)
+        public bool AddService(Service service, bool add = false)
         {
             if (_services.TryAdd(service.Name, service))
             {
                 service.OutputReceived += (name, output) => ServiceOutputReceived?.Invoke(name, output);
-                _logger.Info($"服务 {service.Name} 已被添加, 详情：{service}.");
+                if (add)
+                {
+                    _logger.Info($"服务 {service.Name} 已被添加, 详情：{service}.");
+                }
                 return true;
             }
             return false;

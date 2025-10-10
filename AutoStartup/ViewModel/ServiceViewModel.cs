@@ -1,5 +1,6 @@
 ﻿using AutoStartup.Model;
 using AutoStartup.Services;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -24,7 +25,7 @@ namespace AutoStartup.ViewModel
 
         public bool Stopped => Status != ServiceStatus.Running;
 
-        public ObservableCollection<string> OperationLogs { get; } = new();
+        public ObservableCollection<(LogLevel, string)> OperationLogs { get; } = new();
 
         public ObservableCollection<string> ConsoleOutputs { get; } = new();
 
@@ -51,11 +52,11 @@ namespace AutoStartup.ViewModel
                 OnPropertyChanged(nameof(Running));
                 OnPropertyChanged(nameof(Stopped));
             };
-            foreach(var item in Service.InMemoryOperationLogs)
+            foreach (var item in Service.InMemoryOperationLogs)
             {
-                OperationLogs.Add(item);
+                OperationLogs.Add((GetLogLevel(item), item));
             }
-            foreach(var item in Service.InMemoryLogs)
+            foreach (var item in Service.InMemoryLogs)
             {
                 ConsoleOutputs.Add(item);
             }
@@ -64,7 +65,7 @@ namespace AutoStartup.ViewModel
             {
                 MainWindow.UIDispatcher.Invoke(() =>
                 {
-                    OperationLogs.Add(line);
+                    OperationLogs.Add((GetLogLevel(line), line));
                     while (OperationLogs.Count > Service.InMemoryLogLimit)
                     {
                         OperationLogs.RemoveAt(0);
@@ -83,6 +84,31 @@ namespace AutoStartup.ViewModel
                     }
                 });
             };
+        }
+
+        private static LogLevel GetLogLevel(string item)
+        {
+            if (item.Contains("[DEBUG]", StringComparison.OrdinalIgnoreCase))
+            {
+                return LogLevel.Debug;
+            }
+            else if (item.Contains("[INFO]", StringComparison.OrdinalIgnoreCase))
+            {
+                return LogLevel.Info;
+            }
+            else if (item.Contains("[WARN]", StringComparison.OrdinalIgnoreCase))
+            {
+                return LogLevel.Warn;
+            }
+            else if (item.Contains("[ERROR]", StringComparison.OrdinalIgnoreCase))
+            {
+                return LogLevel.Error;
+            }
+            else if (item.Contains("[FATAL]", StringComparison.OrdinalIgnoreCase))
+            {
+                return LogLevel.Fatal;
+            }
+            return LogLevel.Info;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.VisualBasic.Logging;
+using Newtonsoft.Json;
 using NLog;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -61,6 +62,7 @@ namespace AutoStartup.Services
             RestartDelayMs = restartDelayMs;
             LogConsoleOutput = logConsoleOutput;
             InMemoryLogLimit = inMemoryLogLimit;
+
 
             string logName = $"Service_{name}";
             _logger = LogManager.GetLogger(logName);
@@ -229,11 +231,16 @@ namespace AutoStartup.Services
             AutoRestart = service.AutoRestart;
             RestartDelayMs = service.RestartDelayMs;
             InMemoryLogLimit = service.InMemoryLogLimit;
+            EnvironmentVariables = new(service.EnvironmentVariables.ToArray());
         }
 
         public Service Clone()
         {
-            return new Service(Name, FileName, Enabled, Arguments, WorkingDirectory, HideWindow, StartDelayMs, AutoRestart, RestartDelayMs, InMemoryLogLimit, LogConsoleOutput);
+            var service = new Service(Name, FileName, Enabled, Arguments, WorkingDirectory, HideWindow, StartDelayMs, AutoRestart, RestartDelayMs, InMemoryLogLimit, LogConsoleOutput)
+            {
+                EnvironmentVariables = new(EnvironmentVariables.ToArray())
+            };
+            return service;
         }
 
         protected void OnPropertyChanged(string propertyName)
@@ -263,8 +270,9 @@ namespace AutoStartup.Services
 
         private void OnErrorReceived(string output)
         {
-            OutputReceived?.Invoke(Name, output);
-            AddLogLine(_inMemoryLogs, output);
+            string fakeNLog = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}][Error] {output}";
+            OutputReceived?.Invoke(Name, fakeNLog);
+            AddLogLine(_inMemoryLogs, fakeNLog);
             if (LogConsoleOutput)
             {
                 _logger.Error("[Console]" + output);
@@ -273,8 +281,9 @@ namespace AutoStartup.Services
 
         private void OnOutputReceived(string output)
         {
-            OutputReceived?.Invoke(Name, output);
-            AddLogLine(_inMemoryLogs, output);
+            string fakeNLog = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.ffff}][Info] {output}";
+            OutputReceived?.Invoke(Name, fakeNLog);
+            AddLogLine(_inMemoryLogs, fakeNLog);
             if (LogConsoleOutput)
             {
                 _logger.Info("[Console]" + output);

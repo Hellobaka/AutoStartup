@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:AutoStartup.Controls"
+    xmlns:converters="clr-namespace:AutoStartup.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
     xmlns:hc="https://handyorg.github.io/handycontrol"
@@ -18,6 +19,7 @@
     mc:Ignorable="d">
     <Window.Resources>
         <local:StatusColorConverter x:Key="StatusColorConverter" />
+        <converters:HalfWindowHeightConverter x:Key="HalfWindowHeightConverter" />
     </Window.Resources>
 
     <Grid>
@@ -306,21 +308,25 @@
                 <Expander
                     Grid.Row="1"
                     Margin="0,0,0,5"
-                    Header="操作日志"
                     IsExpanded="True">
-                    <ListBox
+                    <Expander.Header>
+                        <TextBlock Text="{Binding SelectedService.OperationLogs.Count, StringFormat=操作日志 ({0} 条)}" />
+                    </Expander.Header>
+                    <RichTextBox
+                        x:Name="OperationLogDisplay"
+                        MaxHeight="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}, Converter={StaticResource HalfWindowHeightConverter}}"
                         FontFamily="Consolas, Microsoft YaHei, 微软雅黑"
-                        FontSize="13"
-                        ItemsSource="{Binding SelectedService.OperationLogs}" />
+                        VerticalScrollBarVisibility="Visible" />
                 </Expander>
-                <Expander
-                    Grid.Row="2"
-                    Header="控制台输出"
-                    IsExpanded="False">
-                    <ListBox
+                <Expander Grid.Row="2" IsExpanded="True">
+                    <Expander.Header>
+                        <TextBlock Text="{Binding SelectedService.ConsoleOutputs.Count, StringFormat=控制台输出 ({0} 条)}" />
+                    </Expander.Header>
+                    <RichTextBox
+                        x:Name="ConsoleOutputDisplay"
+                        MaxHeight="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}, Converter={StaticResource HalfWindowHeightConverter}}"
                         FontFamily="Consolas, Microsoft YaHei, 微软雅黑"
-                        FontSize="13"
-                        ItemsSource="{Binding SelectedService.ConsoleOutputs}" />
+                        VerticalScrollBarVisibility="Visible" />
                 </Expander>
             </Grid>
         </ScrollViewer>
