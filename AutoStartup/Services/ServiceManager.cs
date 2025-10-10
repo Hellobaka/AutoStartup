@@ -11,8 +11,8 @@ namespace AutoStartup.Services
 
         private readonly Logger _logger = LogManager.GetLogger("ServiceManager");
 
-        private readonly ConcurrentDictionary<string, Service> _services = new();
-
+        private readonly List<Service> _services = new();
+        private readonly Lock serviceMaintenanceLock = new();
         public ServiceManager()
         {
             Instance = this;
@@ -23,14 +23,13 @@ namespace AutoStartup.Services
 
         public static ServiceManager Instance { get; private set; }
 
-        public int RunningCount => _services.Values.Count(s => s.Status == ServiceStatus.Running);
-
         private bool Reloading { get; set; } = false;
 
         public bool AddService(Service service, bool add = false)
         {
-            if (_services.TryAdd(service.Name, service))
+            lock (serviceMaintenanceLock)
             {
+                _services.Add(service);
                 service.OutputReceived += (name, output) => ServiceOutputReceived?.Invoke(name, output);
                 if (add)
                 {
@@ -38,17 +37,11 @@ namespace AutoStartup.Services
                 }
                 return true;
             }
-            return false;
-        }
-
-        public Service? GetService(string name)
-        {
-            return _services.TryGetValue(name, out var svc) ? svc : null;
         }
 
         public IEnumerable<Service> ListServices()
         {
-            return _services.Values;
+            return _services;
         }
 
         public bool LoadFromFile()
@@ -96,14 +89,18 @@ namespace AutoStartup.Services
                 _logger.Warn("Cannot add service while reloading.");
                 return false;
             }
-
-            if (_services.TryRemove(name, out var service))
+            lock (serviceMaintenanceLock)
             {
-                service.OutputReceived -= (n, o) => ServiceOutputReceived?.Invoke(n, o);
-                _logger.Info($"服务 {name} 已被移除.");
-                return true;
+                var item = _services.FirstOrDefault(x => x.Name == name);
+                if (item != null)
+                {
+                    _services.Remove(item);
+                    item.OutputReceived -= (n, o) => ServiceOutputReceived?.Invoke(n, o);
+                    _logger.Info($"服务 {name} 已被移除.");
+                    return true;
+                }
+                return false;
             }
-            return false;
         }
 
         public async Task RestartAllAsync()
@@ -114,7 +111,7 @@ namespace AutoStartup.Services
                 return;
             }
 
-            foreach (var svc in _services.Values)
+            foreach (var svc in _services.Where(x => x.Enabled))
             {
                 await svc.RestartAsync();
             }
@@ -124,8 +121,7 @@ namespace AutoStartup.Services
         {
             try
             {
-                var services = _services.Values.ToArray();
-                File.WriteAllText(ConfigFileName, JsonConvert.SerializeObject(services, Formatting.Indented));
+                File.WriteAllText(ConfigFileName, JsonConvert.SerializeObject(_services, Formatting.Indented));
                 return true;
             }
             catch (Exception e)
@@ -144,7 +140,7 @@ namespace AutoStartup.Services
                 return;
             }
 
-            foreach (var svc in _services.Values)
+            foreach (var svc in _services.Where(x => x.Enabled))
             {
                 await svc.StartAsync();
             }
@@ -158,9 +154,28 @@ namespace AutoStartup.Services
                 return;
             }
 
-            foreach (var svc in _services.Values)
+            foreach (var svc in _services)
             {
                 await svc.StopAsync();
+            }
+        }
+
+        public void MoveService(string name, int newIndex)
+        {
+            if (Reloading)
+            {
+                _logger.Warn("由于正在重载配置，无法进行服务重排序.");
+                return;
+            }
+            lock (serviceMaintenanceLock)
+            {
+                var item = _services.FirstOrDefault(x => x.Name == name);
+                if (item != null)
+                {
+                    _services.Remove(item);
+                    _services.Insert(newIndex, item);
+                    _logger.Info($"服务 {name} 已被移动到位置 {newIndex}.");
+                }
             }
         }
     }
