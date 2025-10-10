@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic.Logging;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using NLog;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -62,7 +61,6 @@ namespace AutoStartup.Services
             RestartDelayMs = restartDelayMs;
             LogConsoleOutput = logConsoleOutput;
             InMemoryLogLimit = inMemoryLogLimit;
-
 
             string logName = $"Service_{name}";
             _logger = LogManager.GetLogger(logName);

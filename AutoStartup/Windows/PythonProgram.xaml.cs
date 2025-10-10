@@ -1,5 +1,4 @@
-﻿using Microsoft.Win32;
-using System.IO;
+﻿using System.IO;
 using System.Windows;
 
 namespace AutoStartup.Windows

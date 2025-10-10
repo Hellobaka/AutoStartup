@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using UserControl = System.Windows.Controls.UserControl;
 
@@ -41,7 +40,6 @@ namespace AutoStartup.Controls
         public ObservableCollection<KeyValuePair<string, string>> ItemDisplaySource { get; set; } = [];
 
         public KeyValuePair<string, string> SelectedItem { get; set; }
-
 
         public event PropertyChangedEventHandler PropertyChanged;
 

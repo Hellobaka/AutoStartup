@@ -1,7 +1,5 @@
 ﻿using AutoStartup.Services;
 using System.IO;
-using System.Reflection;
-using System.Threading.Tasks;
 
 namespace AutoStartup
 {
@@ -112,7 +110,7 @@ namespace AutoStartup
             RunningServiceDisplay.Text = $"正在运行 {running} 个服务";
             TaskBarMenuParent.DropDownItems.Clear();
 
-            foreach(var item in ServiceManager.Instance.ListServices())
+            foreach (var item in ServiceManager.Instance.ListServices())
             {
                 ToolStripMenuItem subService = new(item.Name);
                 ToolStripMenuItem startService = new("启动");

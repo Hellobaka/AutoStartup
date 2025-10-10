@@ -111,11 +111,11 @@ namespace AutoStartup
             OperationLogDisplay.Document.Blocks.Clear();
             ConsoleOutputDisplay.Document.Blocks.Clear();
 
-            foreach(var item in ViewModel?.SelectedService?.OperationLogs ?? [])
+            foreach (var item in ViewModel?.SelectedService?.OperationLogs ?? [])
             {
                 AddOperationLogLine(item);
             }
-            foreach(var item in ViewModel?.SelectedService?.ConsoleOutputs ?? [])
+            foreach (var item in ViewModel?.SelectedService?.ConsoleOutputs ?? [])
             {
                 AddConsoleOutputLine(item);
             }
@@ -134,7 +134,7 @@ namespace AutoStartup
             {
                 if (e.NewItems != null && e.NewItems.Count > 0)
                 {
-                    foreach((LogLevel, string) line in e.NewItems)
+                    foreach ((LogLevel, string) line in e.NewItems)
                     {
                         AddOperationLogLine(line);
                     }
@@ -262,7 +262,7 @@ namespace AutoStartup
 
             string type = $"AutoStartup.Windows.{tag}";
             var windowType = Type.GetType(type);
-            if(windowType == null)
+            if (windowType == null)
             {
                 ShowError($"无法找到窗口类型 {type}");
                 return;

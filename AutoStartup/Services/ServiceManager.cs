@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using NLog;
-using System.Collections.Concurrent;
 using System.IO;
 
 namespace AutoStartup.Services
@@ -11,8 +10,10 @@ namespace AutoStartup.Services
 
         private readonly Logger _logger = LogManager.GetLogger("ServiceManager");
 
-        private CancellationTokenSource? _batchStartCts; 
+        private CancellationTokenSource? _batchStartCts;
+
         private readonly List<Service> _services = new();
+
         private readonly Lock serviceMaintenanceLock = new();
 
         public ServiceManager()
@@ -183,7 +184,7 @@ namespace AutoStartup.Services
             }
             _logger.Info("终止所有服务.");
 
-            _batchStartCts?.Cancel(); 
+            _batchStartCts?.Cancel();
             foreach (var svc in _services)
             {
                 _logger.Info($"终止服务 {svc.Name}");
