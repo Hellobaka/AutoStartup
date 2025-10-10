@@ -146,6 +146,7 @@ namespace AutoStartup.Services
                 await StopAsync();
                 await Task.Delay(100);
                 lock (_lock) { Status = ServiceStatus.Restarting; }
+                AddOperationLog($"重启延时 {RestartDelayMs}ms...", LogLevel.Warn);
                 await Task.Delay(RestartDelayMs);
             }
             await StartAsync();
@@ -165,6 +166,7 @@ namespace AutoStartup.Services
             AddOperationLog($"启动服务...", LogLevel.Info);
             if (StartDelayMs > 0)
             {
+                AddOperationLog($"启动延时 {StartDelayMs}ms...", LogLevel.Warn);
                 await Task.Delay(StartDelayMs);
             }
 
@@ -355,15 +357,7 @@ namespace AutoStartup.Services
                 {
                     AddOperationLog($"启动过程发生异常.\n{ex}", LogLevel.Error);
                     lock (_lock) { Status = ServiceStatus.Error; }
-                    if (AutoRestart)
-                    {
-                        lock (_lock) { Status = ServiceStatus.Restarting; }
-                        await Task.Delay(RestartDelayMs, token);
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    break;
                 }
             }
         }

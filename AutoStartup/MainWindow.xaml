@@ -129,6 +129,19 @@
                                     VerticalAlignment="Center"
                                     Text="重启中"
                                     Visibility="{Binding Restarting, Converter={StaticResource Boolean2VisibilityConverter}}" />
+                                <Path
+                                    Width="16"
+                                    Height="16"
+                                    VerticalAlignment="Center"
+                                    Data="{StaticResource ErrorGeometry}"
+                                    Fill="Red"
+                                    Stretch="Uniform"
+                                    Visibility="{Binding Error, Converter={StaticResource Boolean2VisibilityConverter}}" />
+                                <TextBlock
+                                    Margin="3,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Text="错误"
+                                    Visibility="{Binding Error, Converter={StaticResource Boolean2VisibilityConverter}}" />
                             </StackPanel>
                             <StackPanel
                                 Grid.Row="1"
