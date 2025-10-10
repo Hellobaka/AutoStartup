@@ -4,6 +4,7 @@ using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace AutoStartup.ViewModel
@@ -16,12 +17,14 @@ namespace AutoStartup.ViewModel
             ServiceCreateCommand = new RelayCommand(_ => CreateService());
             FilePathBrowserCommand = new RelayCommand(_ => BrowserFilePath());
             WorkingDirectoryBrowserCommand = new RelayCommand(_ => BrowserWorkingDirectory());
+            StartAllServiceCommand = new RelayCommand(async _ => await StartAllService());
+            StopAllServiceCommand = new RelayCommand(async _ => await StopAllService());
             foreach (var item in ServiceManager.Instance.ListServices())
             {
                 Services.Add(new ServiceViewModel(item, RemoveService));
             }
 
-            Services.CollectionChanged += Services_CollectionChanged;
+            ListenServiceCollectionChanged();
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -33,6 +36,10 @@ namespace AutoStartup.ViewModel
         public ObservableCollection<ServiceViewModel> Services { get; set; } = [];
 
         public ICommand FilePathBrowserCommand { get; }
+
+        public ICommand StartAllServiceCommand { get; }
+
+        public ICommand StopAllServiceCommand { get; }
 
         public ICommand ServiceEditCommand { get; }
 
@@ -58,6 +65,11 @@ namespace AutoStartup.ViewModel
                 MainWindow.ShowError("服务进程路径不可为空");
                 return;
             }
+            if (!CheckServiceNameValid(PreviewService.Name))
+            {
+                MainWindow.ShowError("服务名称包含无效字符");
+                return;
+            }
             Service service = PreviewService.Clone();
             if (Services.Any(s => s.Service.Name == service.Name))
             {
@@ -79,13 +91,29 @@ namespace AutoStartup.ViewModel
 
         public void EditService()
         {
-            if (SelectedService == null)
+            if (SelectedService == null || PreviewService == null)
             {
                 MainWindow.ShowError("未选中项目，无法进行编辑操作");
                 return;
             }
+            if (!CheckServiceNameValid(PreviewService.Name))
+            {
+                MainWindow.ShowError("服务名称包含无效字符");
+                return;
+            }
+            if (SelectedService.Name != PreviewService.Name
+                && !MainWindow.ShowConfirm("更改服务名称将导致无法查看旧日志，是否确认"))
+            {
+                return;
+            }
+            if (Services.Any(x => x.Name == PreviewService.Name && x != SelectedService))
+            {
+                MainWindow.ShowError("欲更改的服务名称重复，请修改");
+                return;
+            }
             SelectedService.Service.UpdateBy(PreviewService);
             Services = [.. Services];
+            ListenServiceCollectionChanged();
             if (ServiceManager.Instance.SaveToFile())
             {
                 MainWindow.ShowInfo("保存成功");
@@ -158,6 +186,7 @@ namespace AutoStartup.ViewModel
         {
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Move)
             {
+                ServiceManager.Instance.MoveService(ServiceManager.Instance.ListServices().ElementAt(e.OldStartingIndex).Name, e.NewStartingIndex);
                 ServiceManager.Instance.SaveToFile();
             }
         }
@@ -178,6 +207,28 @@ namespace AutoStartup.ViewModel
                     PreviewService = new("", "");
                 }
             }
+        }
+
+        private async Task StopAllService()
+        {
+            await ServiceManager.Instance.StopAllAsync();
+        }
+
+        private async Task StartAllService()
+        {
+            await ServiceManager.Instance.StartAllAsync();
+        }
+
+        private void ListenServiceCollectionChanged()
+        {
+            Services.CollectionChanged -= Services_CollectionChanged;
+            Services.CollectionChanged += Services_CollectionChanged;
+        }
+
+        private static bool CheckServiceNameValid(string name)
+        {
+            var chars = Path.GetInvalidFileNameChars().Concat(Path.GetInvalidPathChars());
+            return !name.Any(name => chars.Contains(name));
         }
     }
 }

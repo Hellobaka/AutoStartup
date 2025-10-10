@@ -161,12 +161,14 @@
                 <Button
                     Margin="0,0,5,0"
                     HorizontalAlignment="Stretch"
+                    Command="{Binding StartAllServiceCommand}"
                     Content="全部启动"
                     Style="{StaticResource ButtonPrimary}" />
                 <Button
                     Grid.Column="1"
                     Margin="5,0,0,0"
                     HorizontalAlignment="Stretch"
+                    Command="{Binding StopAllServiceCommand}"
                     Content="全部终止" />
             </Grid>
         </Grid>
@@ -310,7 +312,10 @@
                     Margin="0,0,0,5"
                     IsExpanded="True">
                     <Expander.Header>
-                        <TextBlock Text="{Binding SelectedService.OperationLogs.Count, StringFormat=操作日志 ({0} 条)}" />
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="操作日志" />
+                            <TextBlock Text="{Binding SelectedService.OperationLogs.Count, StringFormat=({0} 条)}" />
+                        </StackPanel>
                     </Expander.Header>
                     <RichTextBox
                         x:Name="OperationLogDisplay"
@@ -318,9 +323,12 @@
                         FontFamily="Consolas, Microsoft YaHei, 微软雅黑"
                         VerticalScrollBarVisibility="Visible" />
                 </Expander>
-                <Expander Grid.Row="2" IsExpanded="True">
+                <Expander Grid.Row="2" IsExpanded="False">
                     <Expander.Header>
-                        <TextBlock Text="{Binding SelectedService.ConsoleOutputs.Count, StringFormat=控制台输出 ({0} 条)}" />
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="控制台输出" />
+                            <TextBlock Text="{Binding SelectedService.ConsoleOutputs.Count, StringFormat=({0} 条)}" />
+                        </StackPanel>
                     </Expander.Header>
                     <RichTextBox
                         x:Name="ConsoleOutputDisplay"

@@ -21,7 +21,6 @@ namespace AutoStartup
     /// </summary>
     public partial class MainWindow : Window
     {
-        // TODO: 验证后台服务管理逻辑
         public MainWindow()
         {
             InitializeComponent();
