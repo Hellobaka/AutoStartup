@@ -1,5 +1,6 @@
 ﻿using AutoStartup.Services;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace AutoStartup
 {
@@ -79,10 +80,15 @@ namespace AutoStartup
             OnTaskbarDoubleClicked?.Invoke();
         }
 
-        private static void ExitItem_Click(object? sender, EventArgs e)
+        private static async void ExitItem_Click(object? sender, EventArgs e)
         {
             if (MessageBox.Show("确定要退出框架吗？", "嗯？", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
+                if (ServiceManager.Instance.RunningCount > 0
+                    && MessageBox.Show("仍有服务正在运行，需要在退出前终止所有服务吗？", "警告", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                {
+                    await ServiceManager.Instance.StopAllAsync();
+                }
                 Environment.Exit(0);
             }
         }
@@ -158,7 +164,7 @@ namespace AutoStartup
         {
             if (sender is ToolStripMenuItem item && item.Tag is Service service)
             {
-                await service.StartAsync();
+                await service.StartAsync(false);
             }
         }
 

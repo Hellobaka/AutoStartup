@@ -39,7 +39,7 @@ namespace AutoStartup.ViewModel
         public ServiceViewModel(Service svc, Action<ServiceViewModel> onDelete)
         {
             Service = svc;
-            StartCommand = new RelayCommand(async _ => await Service.StartAsync());
+            StartCommand = new RelayCommand(async _ => await Service.StartAsync(false));
             StopCommand = new RelayCommand(async _ => await Service.StopAsync());
             RestartCommand = new RelayCommand(async _ => await Service.RestartAsync());
             DeleteCommand = new RelayCommand(_ => onDelete?.Invoke(this));

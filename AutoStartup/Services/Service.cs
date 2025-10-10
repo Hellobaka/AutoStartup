@@ -150,7 +150,7 @@ namespace AutoStartup.Services
             await StartAsync();
         }
 
-        public async Task StartAsync()
+        public async Task StartAsync(bool needStartDelay = true)
         {
             lock (_lock)
             {
@@ -162,7 +162,7 @@ namespace AutoStartup.Services
                 Status = ServiceStatus.Starting;
             }
             AddOperationLog($"启动服务...", LogLevel.Info);
-            if (StartDelayMs > 0)
+            if (StartDelayMs > 0 && needStartDelay)
             {
                 AddOperationLog($"启动延时 {StartDelayMs}ms...", LogLevel.Warn);
                 await Task.Delay(StartDelayMs);
@@ -300,6 +300,8 @@ namespace AutoStartup.Services
                         RedirectStandardOutput = true,
                         RedirectStandardError = true,
                         CreateNoWindow = HideWindow,
+                        StandardOutputEncoding = System.Text.Encoding.UTF8,
+                        StandardErrorEncoding = System.Text.Encoding.UTF8,
                     };
                     foreach (var item in EnvironmentVariables)
                     {
