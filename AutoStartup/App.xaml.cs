@@ -41,7 +41,7 @@ namespace AutoStartup
                 {
                     if (!CheckHasStartupRegistry())
                     {
-                        AddStartupProgram("AutoStartup", System.Reflection.Assembly.GetExecutingAssembly().Location + " -o");
+                        AddStartupProgram("AutoStartup", Environment.ProcessPath + " -o");
                     }
                     if (loadService)
                     {
