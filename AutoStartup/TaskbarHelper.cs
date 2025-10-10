@@ -115,15 +115,29 @@ namespace AutoStartup
                 stopService.Enabled = item.Status != ServiceStatus.Stopped;
                 stopService.Tag = item;
                 stopService.Click += StopService_Click;
+                ToolStripMenuItem restartService = new("重启");
+                restartService.Enabled = item.Status == ServiceStatus.Running;
+                restartService.Tag = item;
+                restartService.Click += RestartService_Click;
 
                 subService.DropDownItems.Add(startService);
                 subService.DropDownItems.Add(stopService);
+                subService.DropDownItems.Add("-");
+                subService.DropDownItems.Add(restartService);
 
                 TaskBarMenuParent.DropDownItems.Add(subService);
             }
             TaskBarMenuParent.DropDownItems.Add("-");
             TaskBarMenuParent.DropDownItems.Add("启用所有", null, StartAllItem_Click);
             TaskBarMenuParent.DropDownItems.Add("终止所有", null, StopAllItem_Click);
+        }
+
+        private static async void RestartService_Click(object? sender, EventArgs e)
+        {
+            if (sender is ToolStripMenuItem item && item.Tag is Service service)
+            {
+                await service.RestartAsync();
+            }
         }
 
         private static async void StopService_Click(object? sender, EventArgs e)
