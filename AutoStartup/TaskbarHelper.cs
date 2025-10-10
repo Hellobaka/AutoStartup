@@ -24,36 +24,43 @@ namespace AutoStartup
             {
                 UIThread = new Thread(() =>
                 {
-                    Application.EnableVisualStyles();
-                    Application.SetCompatibleTextRenderingDefault(false);
-                    Application.SetDefaultFont(new("Segoe UI", 9));
-                    Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+                    try
+                    {
+                        Application.EnableVisualStyles();
+                        Application.SetCompatibleTextRenderingDefault(false);
+                        Application.SetDefaultFont(new("Segoe UI", 9));
+                        Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 
-                    NotifyIcon = new NotifyIcon();
-                    NotifyIcon.Icon = new Icon(new MemoryStream(Convert.FromBase64String(Shared.IconBase64)));
-                    var menu = new ContextMenuStrip();
-                    NotifyIcon.ContextMenuStrip = menu;
+                        NotifyIcon = new NotifyIcon();
+                        NotifyIcon.Icon = new Icon(new MemoryStream(Convert.FromBase64String(Shared.IconBase64)));
+                        var menu = new ContextMenuStrip();
+                        NotifyIcon.ContextMenuStrip = menu;
 
-                    TotalServiceDisplay = new ToolStripMenuItem { Text = $"共 {0} 个服务" };
-                    RunningServiceDisplay = new ToolStripMenuItem { Text = $"正在运行 {0} 个服务" };
+                        TotalServiceDisplay = new ToolStripMenuItem { Text = $"共 {0} 个服务" };
+                        RunningServiceDisplay = new ToolStripMenuItem { Text = $"正在运行 {0} 个服务" };
 
-                    menu.Items.Add(TotalServiceDisplay);
-                    menu.Items.Add(RunningServiceDisplay);
-                    menu.Items.Add("-");
-                    menu.Items.Add("显示 UI", null, ShowUI_Click);
-                    menu.Items.Add("-");
-                    TaskBarMenuParent = new ToolStripMenuItem() { Text = "服务" };
-                    menu.Items.Add(TaskBarMenuParent);
-                    menu.Items.Add("-");
+                        menu.Items.Add(TotalServiceDisplay);
+                        menu.Items.Add(RunningServiceDisplay);
+                        menu.Items.Add("-");
+                        menu.Items.Add("显示 UI", null, ShowUI_Click);
+                        menu.Items.Add("-");
+                        TaskBarMenuParent = new ToolStripMenuItem() { Text = "服务" };
+                        menu.Items.Add(TaskBarMenuParent);
+                        menu.Items.Add("-");
 
-                    menu.Items.Add(new ToolStripMenuItem { Text = $"框架版本: {"1.0.0"}" });
-                    menu.Items.Add("退出", null, ExitItem_Click);
+                        menu.Items.Add(new ToolStripMenuItem { Text = $"框架版本: {"1.0.0"}" });
+                        menu.Items.Add("退出", null, ExitItem_Click);
 
-                    NotifyIcon.Visible = true;
-                    NotifyIcon.MouseDown += NotifyIcon_MouseDown;
-                    NotifyIcon.DoubleClick += NotifyIcon_DoubleClick;
-                    RebuildTaskBarMenu();
-                    Application.Run();
+                        NotifyIcon.Visible = true;
+                        NotifyIcon.MouseDown += NotifyIcon_MouseDown;
+                        NotifyIcon.DoubleClick += NotifyIcon_DoubleClick;
+                        RebuildTaskBarMenu();
+                        Application.Run();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"托盘事件循环过程发生异常：{ex}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 });
                 UIThread.SetApartmentState(ApartmentState.STA);
                 UIThread.Start();

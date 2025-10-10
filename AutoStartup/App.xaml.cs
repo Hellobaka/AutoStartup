@@ -1,9 +1,6 @@
 ﻿using AutoStartup.Services;
 using Microsoft.Win32;
-using NLog;
-using NLog.Config;
-using NLog.Targets;
-using System.Threading.Tasks;
+using System.Security.Principal;
 using System.Windows;
 
 namespace AutoStartup
@@ -27,12 +24,14 @@ namespace AutoStartup
             {
                 Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
+                ServiceManager serviceManager = new();
+
+                Shared.IsElevated = IsElevated();
                 TaskbarHelper.OnTaskbarDoubleClicked += TaskbarHelper_OnTaskbarDoubleClicked;
                 IPCNotice.OnActivateRequested += IPCNotice_OnActivateRequested;
                 Shared.Maintenance = args.Length == 0;
                 TaskbarHelper.BuildTaskBar();
                 IPCNotice.StartPipeServer();
-                ServiceManager serviceManager = new();
                 bool loadService = serviceManager.LoadFromFile();
                 if (Shared.Maintenance)
                 {
@@ -103,16 +102,27 @@ namespace AutoStartup
 
         private static void RunApp()
         {
+            if (Shared.IsElevated)
+            {
+                System.Windows.MessageBox.Show("当前应用由管理员启动，在当前权限下，无法支持拖拽添加应用。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
             Thread staThread = new(() =>
             {
-                var app = new App
+                try
                 {
-                    StartupUri = new("pack://application:,,,/MainWindow.xaml"),
-                };
-                app.InitializeComponent();
+                    var app = new App
+                    {
+                        StartupUri = new("pack://application:,,,/MainWindow.xaml"),
+                    };
+                    app.InitializeComponent();
 
-                Shared.WPFInstance = app;
-                Shared.WPFInstance.Run();
+                    Shared.WPFInstance = app;
+                    Shared.WPFInstance.Run();
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.MessageBox.Show($"WPF 事件循环过程发生异常：{ex}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             });
             staThread.SetApartmentState(ApartmentState.STA);
             staThread.Start();
@@ -129,6 +139,20 @@ namespace AutoStartup
                 return;
             }
             rk.SetValue(name, path);
+        }
+
+        private static bool IsElevated()
+        {
+            try
+            {
+                using WindowsIdentity identity = WindowsIdentity.GetCurrent();
+                WindowsPrincipal principal = new(identity);
+                return principal.IsInRole(WindowsBuiltInRole.Administrator);
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }
