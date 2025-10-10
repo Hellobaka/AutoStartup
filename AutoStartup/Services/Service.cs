@@ -177,11 +177,6 @@ namespace AutoStartup.Services
         {
             lock (_lock)
             {
-                if (Status is not ServiceStatus.Running and not ServiceStatus.Starting and not ServiceStatus.Error)
-                {
-                    return;
-                }
-
                 Status = ServiceStatus.Stopping;
             }
             _cts?.Cancel();
@@ -334,7 +329,7 @@ namespace AutoStartup.Services
                     {
                         AddOperationLog($"进程已结束，原因：自行退出.", LogLevel.Warn);
                         lock (_lock) { Status = ServiceStatus.Stopped; }
-                        if (AutoRestart)
+                        if (AutoRestart && !token.IsCancellationRequested)
                         {
                             AddOperationLog($"将在 {RestartDelayMs}ms 后尝试重启...", LogLevel.Info);
                             lock (_lock) { Status = ServiceStatus.Restarting; }
