@@ -333,7 +333,7 @@ namespace AutoStartup.Services
                     else
                     {
                         AddOperationLog($"进程已结束，原因：自行退出.", LogLevel.Warn);
-                        lock (_lock) { Status = ServiceStatus.Error; }
+                        lock (_lock) { Status = ServiceStatus.Stopped; }
                         if (AutoRestart)
                         {
                             AddOperationLog($"将在 {RestartDelayMs}ms 后尝试重启...", LogLevel.Info);
