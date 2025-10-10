@@ -144,6 +144,8 @@ namespace AutoStartup.Services
             if (Status == ServiceStatus.Running)
             {
                 await StopAsync();
+                await Task.Delay(100);
+                lock (_lock) { Status = ServiceStatus.Restarting; }
                 await Task.Delay(RestartDelayMs);
             }
             await StartAsync();
@@ -324,7 +326,7 @@ namespace AutoStartup.Services
 
                     if (token.IsCancellationRequested)
                     {
-                        AddOperationLog($"进程已结束，原因：用户手动结束.", LogLevel.Info);
+                        AddOperationLog($"进程已结束，原因：用户手动结束.", LogLevel.Warn);
                         lock (_lock) { Status = ServiceStatus.Stopped; }
                         break;
                     }
@@ -335,8 +337,8 @@ namespace AutoStartup.Services
                         if (AutoRestart)
                         {
                             AddOperationLog($"将在 {RestartDelayMs}ms 后尝试重启...", LogLevel.Info);
-                            await Task.Delay(RestartDelayMs, token);
                             lock (_lock) { Status = ServiceStatus.Restarting; }
+                            await Task.Delay(RestartDelayMs, token);
                         }
                         else
                         {
@@ -344,15 +346,19 @@ namespace AutoStartup.Services
                         }
                     }
                 }
-                catch (TaskCanceledException) { }
+                catch (TaskCanceledException)
+                {
+                    AddOperationLog($"进程已结束，原因：用户手动结束.", LogLevel.Warn);
+                    lock (_lock) { Status = ServiceStatus.Stopped; }
+                }
                 catch (Exception ex)
                 {
                     AddOperationLog($"启动过程发生异常.\n{ex}", LogLevel.Error);
                     lock (_lock) { Status = ServiceStatus.Error; }
                     if (AutoRestart)
                     {
-                        await Task.Delay(RestartDelayMs, token);
                         lock (_lock) { Status = ServiceStatus.Restarting; }
+                        await Task.Delay(RestartDelayMs, token);
                     }
                     else
                     {

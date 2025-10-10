@@ -11,8 +11,10 @@ namespace AutoStartup.Services
 
         private readonly Logger _logger = LogManager.GetLogger("ServiceManager");
 
+        private CancellationTokenSource? _batchStartCts; 
         private readonly List<Service> _services = new();
         private readonly Lock serviceMaintenanceLock = new();
+
         public ServiceManager()
         {
             Instance = this;
@@ -115,8 +117,19 @@ namespace AutoStartup.Services
                 return;
             }
 
+            _batchStartCts?.Cancel();
+            _batchStartCts = new CancellationTokenSource();
+            var token = _batchStartCts.Token;
+            _logger.Info("重启所有服务.");
+
             foreach (var svc in _services.Where(x => x.Enabled))
             {
+                if (token.IsCancellationRequested)
+                {
+                    _logger.Info("批量重启被用户中断.");
+                    break;
+                }
+                _logger.Info($"重启服务 {svc.Name}");
                 await svc.RestartAsync();
             }
         }
@@ -144,8 +157,19 @@ namespace AutoStartup.Services
                 return;
             }
 
+            _batchStartCts?.Cancel();
+            _batchStartCts = new CancellationTokenSource();
+            var token = _batchStartCts.Token;
+            _logger.Info("启动所有服务...");
+
             foreach (var svc in _services.Where(x => x.Enabled))
             {
+                if (token.IsCancellationRequested)
+                {
+                    _logger.Info("批量启动被用户中断.");
+                    break;
+                }
+                _logger.Info($"启动服务 {svc.Name}");
                 await svc.StartAsync();
             }
         }
@@ -157,9 +181,12 @@ namespace AutoStartup.Services
                 _logger.Warn("由于正在重载配置，无法进行服务终止.");
                 return;
             }
+            _logger.Info("终止所有服务.");
 
+            _batchStartCts?.Cancel(); 
             foreach (var svc in _services)
             {
+                _logger.Info($"终止服务 {svc.Name}");
                 await svc.StopAsync();
             }
         }

@@ -116,6 +116,19 @@
                                     VerticalAlignment="Center"
                                     Text="已停止"
                                     Visibility="{Binding Stopped, Converter={StaticResource Boolean2VisibilityConverter}}" />
+                                <Path
+                                    Width="16"
+                                    Height="16"
+                                    VerticalAlignment="Center"
+                                    Data="{StaticResource RotateRightGeometry}"
+                                    Fill="Magenta"
+                                    Stretch="Uniform"
+                                    Visibility="{Binding Restarting, Converter={StaticResource Boolean2VisibilityConverter}}" />
+                                <TextBlock
+                                    Margin="3,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Text="重启中"
+                                    Visibility="{Binding Restarting, Converter={StaticResource Boolean2VisibilityConverter}}" />
                             </StackPanel>
                             <StackPanel
                                 Grid.Row="1"

@@ -23,7 +23,9 @@ namespace AutoStartup.ViewModel
 
         public bool Running => Status == ServiceStatus.Running;
 
-        public bool Stopped => Status != ServiceStatus.Running;
+        public bool Stopped => Status != ServiceStatus.Running && Status != ServiceStatus.Restarting;
+
+        public bool Restarting => Status == ServiceStatus.Restarting;
 
         public ObservableCollection<(LogLevel, string)> OperationLogs { get; } = new();
 
@@ -51,6 +53,7 @@ namespace AutoStartup.ViewModel
                 OnPropertyChanged(nameof(Status));
                 OnPropertyChanged(nameof(Running));
                 OnPropertyChanged(nameof(Stopped));
+                OnPropertyChanged(nameof(Restarting));
             };
             foreach (var item in Service.InMemoryOperationLogs)
             {
