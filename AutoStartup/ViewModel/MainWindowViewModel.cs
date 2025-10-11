@@ -28,11 +28,13 @@ namespace AutoStartup.ViewModel
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public Service? PreviewService { get; set; }
+        public Service PreviewService { get; set; } = new("", "");
 
         public ServiceViewModel? SelectedService { get; set; }
 
         public ObservableCollection<ServiceViewModel> Services { get; set; } = [];
+
+        public List<string> OutputEncodings { get; set; } = ["Default", "UTF-8", "GB18030", "Big5", "Shift JIS"];
 
         public ICommand FilePathBrowserCommand { get; }
 

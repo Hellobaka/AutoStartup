@@ -240,7 +240,6 @@
                                     Margin="5,0,0,0"
                                     Command="{Binding FilePathBrowserCommand}"
                                     Content="浏览"
-                                    IsEnabled="{Binding PreviewService, Converter={StaticResource Object2BooleanConverter}}"
                                     Style="{StaticResource ButtonPrimary}" />
                             </Grid>
                         </controls:ControlWithTitle>
@@ -259,7 +258,6 @@
                                     Margin="5,0,0,0"
                                     Command="{Binding WorkingDirectoryBrowserCommand}"
                                     Content="浏览"
-                                    IsEnabled="{Binding PreviewService, Converter={StaticResource Object2BooleanConverter}}"
                                     Style="{StaticResource ButtonPrimary}" />
                             </Grid>
                         </controls:ControlWithTitle>
@@ -271,6 +269,9 @@
                         </controls:ControlWithTitle>
                         <controls:ControlWithTitle Title="环境变量：" TitleWidth="{StaticResource GlobalTitleWidth}">
                             <controls:EditableListBox_Dict_String_String ItemSource="{Binding PreviewService.EnvironmentVariables, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        </controls:ControlWithTitle>
+                        <controls:ControlWithTitle Title="控制台输出编码：" TitleWidth="{StaticResource GlobalTitleWidth}">
+                            <ComboBox ItemsSource="{Binding OutputEncodings}" SelectedItem="{Binding PreviewService.OutputEncoding, Mode=TwoWay}" />
                         </controls:ControlWithTitle>
                         <controls:ControlWithTitle Title="隐藏窗口：" TitleWidth="{StaticResource GlobalTitleWidth}">
                             <ToggleButton

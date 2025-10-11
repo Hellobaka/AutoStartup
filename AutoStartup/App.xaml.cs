@@ -1,6 +1,8 @@
 ﻿using AutoStartup.Services;
 using Microsoft.Win32;
+using System.IO;
 using System.Security.Principal;
+using System.Text;
 using System.Windows;
 
 namespace AutoStartup
@@ -13,6 +15,10 @@ namespace AutoStartup
         [STAThread]
         public static async Task Main(string[] args)
         {
+            Console.OutputEncoding = Encoding.UTF8;
+            Console.InputEncoding = Encoding.UTF8;
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
             Shared.AppMutex = new Mutex(true, Shared.AppMutexName, out bool success);
             if (!success)
             {

@@ -2,6 +2,7 @@
 using NLog;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Text;
 
 namespace AutoStartup.Services
 {
@@ -48,7 +49,8 @@ namespace AutoStartup.Services
                              bool autoRestart = false,
                              int restartDelayMs = 2000,
                              int inMemoryLogLimit = 2000,
-                             bool logConsoleOutput = true)
+                             bool logConsoleOutput = true,
+                             string outputEncoding = "Default")
         {
             Name = name;
             FileName = fileName;
@@ -61,6 +63,7 @@ namespace AutoStartup.Services
             RestartDelayMs = restartDelayMs;
             LogConsoleOutput = logConsoleOutput;
             InMemoryLogLimit = inMemoryLogLimit;
+            OutputEncoding = string.IsNullOrEmpty(outputEncoding) ? "Default" : outputEncoding;
 
             string logName = $"Service_{name}";
             _logger = LogManager.GetLogger(logName);
@@ -136,6 +139,8 @@ namespace AutoStartup.Services
         }
 
         public string WorkingDirectory { get; set; }
+
+        public string OutputEncoding { get; set; } = "Default";
 
         public async Task RestartAsync()
         {
@@ -229,11 +234,12 @@ namespace AutoStartup.Services
             RestartDelayMs = service.RestartDelayMs;
             InMemoryLogLimit = service.InMemoryLogLimit;
             EnvironmentVariables = new(service.EnvironmentVariables.ToArray());
+            OutputEncoding = service.OutputEncoding;
         }
 
         public Service Clone()
         {
-            var service = new Service(Name, FileName, Enabled, Arguments, WorkingDirectory, HideWindow, StartDelayMs, AutoRestart, RestartDelayMs, InMemoryLogLimit, LogConsoleOutput)
+            var service = new Service(Name, FileName, Enabled, Arguments, WorkingDirectory, HideWindow, StartDelayMs, AutoRestart, RestartDelayMs, InMemoryLogLimit, LogConsoleOutput, OutputEncoding)
             {
                 EnvironmentVariables = new(EnvironmentVariables.ToArray())
             };
@@ -300,8 +306,8 @@ namespace AutoStartup.Services
                         RedirectStandardOutput = true,
                         RedirectStandardError = true,
                         CreateNoWindow = HideWindow,
-                        StandardOutputEncoding = System.Text.Encoding.UTF8,
-                        StandardErrorEncoding = System.Text.Encoding.UTF8,
+                        StandardOutputEncoding = GetEncoding(OutputEncoding),
+                        StandardErrorEncoding = GetEncoding(OutputEncoding),
                     };
                     foreach (var item in EnvironmentVariables)
                     {
@@ -354,6 +360,29 @@ namespace AutoStartup.Services
                     lock (_lock) { Status = ServiceStatus.Error; }
                     break;
                 }
+            }
+        }
+
+        private static Encoding GetEncoding(string? name)
+        {
+            if (string.IsNullOrWhiteSpace(name) || name.Equals("Default", StringComparison.OrdinalIgnoreCase))
+            {
+                return Encoding.Default;
+            }
+            try
+            {
+                string encodingName = name switch
+                {
+                    "GB18030" => "GB18030",
+                    "Big5" => "Big5",
+                    "Shift JIS" => "shift_jis",
+                    _ => name
+                };
+                return Encoding.GetEncoding(name);
+            }
+            catch
+            {
+                return Encoding.Default;
             }
         }
     }
