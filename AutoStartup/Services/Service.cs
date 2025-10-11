@@ -142,6 +142,8 @@ namespace AutoStartup.Services
 
         public string OutputEncoding { get; set; } = "Default";
 
+        private ManualResetEvent ProcessStartSignal { get; set; } = new(false);
+
         public async Task RestartAsync()
         {
             if (Status == ServiceStatus.Running)
@@ -175,7 +177,8 @@ namespace AutoStartup.Services
 
             _cts = new CancellationTokenSource();
 
-            await Task.Run(() => RunProcessLoop(_cts.Token));
+            _ = Task.Run(() => RunProcessLoop(_cts.Token));
+            await Task.Run(() => ProcessStartSignal.WaitOne());
         }
 
         public async Task StopAsync()
@@ -318,6 +321,7 @@ namespace AutoStartup.Services
                     _process.ErrorDataReceived += (s, e) => { if (e.Data != null) { OnErrorReceived(e.Data); } };
                     _process.Exited += (s, e) => AddOperationLog($"进程已退出。ExitCode={_process.ExitCode}", LogLevel.Warn);
 
+                    ProcessStartSignal.Set();
                     _process.Start();
                     _process.BeginOutputReadLine();
                     _process.BeginErrorReadLine();
