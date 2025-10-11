@@ -181,7 +181,7 @@ namespace AutoStartup
                     if (!ColorParser.TryParse(item, out var color)
                         || !color.Valid)
                     {
-                        return;
+                        continue;
                     }
                     var brush = new SolidColorBrush(new System.Windows.Media.Color()
                     {
