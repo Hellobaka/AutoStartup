@@ -3,6 +3,7 @@ using AutoStartup.Services;
 using NLog;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Windows.Input;
 
 namespace AutoStartup.ViewModel
@@ -36,6 +37,12 @@ namespace AutoStartup.ViewModel
 
         public ICommand DeleteCommand { get; }
 
+        public ICommand OpenLogFolderCommand { get; }
+
+        public ICommand OpenWorkingDirectoryCommand { get; }
+
+        public ICommand OpenFileFolderCommand { get; }
+
         public ServiceViewModel(Service svc, Action<ServiceViewModel> onDelete)
         {
             Service = svc;
@@ -43,6 +50,9 @@ namespace AutoStartup.ViewModel
             StopCommand = new RelayCommand(async _ => await Service.StopAsync());
             RestartCommand = new RelayCommand(async _ => await Service.RestartAsync());
             DeleteCommand = new RelayCommand(_ => onDelete?.Invoke(this));
+            OpenLogFolderCommand = new RelayCommand(_ => OpenLogFolder());
+            OpenWorkingDirectoryCommand = new RelayCommand(_ => OpenWorkingDirectory());
+            OpenFileFolderCommand = new RelayCommand(_ => OpenFileFolder());
             // 状态变化通知
             Service.StatusChanged += s =>
             {
@@ -84,6 +94,62 @@ namespace AutoStartup.ViewModel
                     }
                 });
             };
+        }
+
+        private void OpenFileFolder()
+        {
+            string? filePath = Service?.FileName;
+            if (!File.Exists(filePath))
+            {
+                string fileName = Path.GetFileName(filePath ?? "");
+                if (!Path.HasExtension(fileName))
+                {
+                    fileName += ".exe";
+                }
+                string[] paths = (Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.User)?.Split(';') ?? [])
+                    .Concat((Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Machine)?.Split(';') ?? [])).ToArray();
+                foreach (var item in paths)
+                {
+                    string path = Path.Combine(item, fileName);
+                    if (File.Exists(path))
+                    {
+                        filePath = path;
+                        break;
+                    }
+                }
+            }
+
+            if (File.Exists(filePath))
+            {
+                System.Diagnostics.Process.Start("explorer.exe", $"/select,\"{filePath}\"");
+            }
+        }
+
+        private void OpenWorkingDirectory()
+        {
+            string? dir = Service.WorkingDirectory;
+            if (string.IsNullOrEmpty(dir))
+            {
+                dir = AppDomain.CurrentDomain.BaseDirectory;
+            }
+            if (Directory.Exists(dir))
+            {
+                System.Diagnostics.Process.Start("explorer.exe", dir);
+            }
+        }
+
+        private void OpenLogFolder()
+        {
+            try
+            {
+                string logDir = Path.Combine("Logs", $"Service_{Name}");
+                if (!Directory.Exists(logDir))
+                {
+                    Directory.CreateDirectory(logDir);
+                }
+                System.Diagnostics.Process.Start("explorer.exe", logDir);
+            }
+            catch { }
         }
 
         private static LogLevel GetLogLevel(string item)

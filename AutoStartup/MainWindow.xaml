@@ -11,8 +11,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodel="clr-namespace:AutoStartup.ViewModel"
     Title="服务管理"
-    Width="1000"
-    Height="600"
+    Width="1200"
+    Height="800"
     d:DataContext="{d:DesignInstance Type=viewmodel:MainWindowViewModel}"
     Closing="Window_Closing"
     WindowStartupLocation="CenterScreen"
@@ -50,6 +50,10 @@
                             Tag="{Binding}">
                             <Grid.ContextMenu>
                                 <ContextMenu DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
+                                    <MenuItem Command="{Binding OpenLogFolderCommand}" Header="打开日志文件夹" />
+                                    <MenuItem Command="{Binding OpenWorkingDirectoryCommand}" Header="打开工作目录" />
+                                    <MenuItem Command="{Binding OpenFileFolderCommand}" Header="打开进程所在位置" />
+                                    <Separator/>
                                     <MenuItem Command="{Binding DeleteCommand}" Header="删除" />
                                 </ContextMenu>
                             </Grid.ContextMenu>
