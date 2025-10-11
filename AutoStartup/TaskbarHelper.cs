@@ -1,5 +1,6 @@
 ﻿using AutoStartup.Services;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace AutoStartup
@@ -48,7 +49,7 @@ namespace AutoStartup
                         menu.Items.Add(TaskBarMenuParent);
                         menu.Items.Add("-");
 
-                        menu.Items.Add(new ToolStripMenuItem { Text = $"框架版本: {"1.0.0"}" });
+                        menu.Items.Add(new ToolStripMenuItem { Text = $"框架版本: {new StatusColorConverter().GetType().Assembly.GetName().Version?.ToString() ?? "2.0.0"}" });
                         menu.Items.Add("退出", null, ExitItem_Click);
 
                         NotifyIcon.Visible = true;
