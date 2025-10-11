@@ -78,11 +78,13 @@ namespace AutoStartup.Windows
                 return;
             }
             DialogResult = true;
-            Tag = new Services.Service(PythonModulePath.Text,
+            var service = new Services.Service(PythonModulePath.Text,
                                        PythonInterpreters.Text,
                                        true,
                                        $"-m {PythonModulePath.Text}",
                                        PythonProgramPath.Text);
+            service.EnvironmentVariables.Add("PYTHONUNBUFFERED", "1");
+            Tag = service;
             Close();
         }
 

@@ -78,7 +78,13 @@ namespace AutoStartup.Windows
                 return;
             }
             DialogResult = true;
-            Tag = new Services.Service(Path.GetFileNameWithoutExtension(PythonProgramPath.Text), PythonInterpreters.Text, true, $"\"{PythonProgramPath.Text}\"", Path.GetDirectoryName(PythonProgramPath.Text));
+            var service = new Services.Service(Path.GetFileNameWithoutExtension(PythonProgramPath.Text),
+                                       PythonInterpreters.Text,
+                                       true,
+                                       $"\"{PythonProgramPath.Text}\"",
+                                       Path.GetDirectoryName(PythonProgramPath.Text));
+            service.EnvironmentVariables.Add("PYTHONUNBUFFERED", "1");
+            Tag = service;
             Close();
         }
 
