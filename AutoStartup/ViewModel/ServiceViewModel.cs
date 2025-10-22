@@ -54,7 +54,7 @@ namespace AutoStartup.ViewModel
             OpenWorkingDirectoryCommand = new RelayCommand(_ => OpenWorkingDirectory());
             OpenFileFolderCommand = new RelayCommand(_ => OpenFileFolder());
             // 状态变化通知
-            Service.StatusChanged += s =>
+            Service.StatusChanged += (_, s) =>
             {
                 OnPropertyChanged(nameof(Status));
                 OnPropertyChanged(nameof(Running));

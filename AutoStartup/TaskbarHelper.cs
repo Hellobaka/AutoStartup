@@ -31,7 +31,9 @@ namespace AutoStartup
                         Application.SetCompatibleTextRenderingDefault(false);
                         Application.SetDefaultFont(new("Segoe UI", 9));
                         Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-
+                        ServiceManager.Instance.ServiceRunningStatusChanged -= Instance_ServiceRunningStatusChanged;
+                        ServiceManager.Instance.ServiceRunningStatusChanged += Instance_ServiceRunningStatusChanged;
+                        
                         NotifyIcon = new NotifyIcon();
                         NotifyIcon.Icon = new Icon(new MemoryStream(Convert.FromBase64String(Shared.IconBase64)));
                         var menu = new ContextMenuStrip();
@@ -66,6 +68,12 @@ namespace AutoStartup
                 UIThread.SetApartmentState(ApartmentState.STA);
                 UIThread.Start();
             }
+        }
+
+        private static void Instance_ServiceRunningStatusChanged(Service service, ServiceStatus status)
+        {
+            int total = ServiceManager.Instance.TotalCount, running = ServiceManager.Instance.RunningCount;
+            NotifyIcon.Text = $"共 {total} 个服务; 正在运行 {running} 个服务";
         }
 
         private static void NotifyIcon_MouseDown(object? sender, MouseEventArgs e)

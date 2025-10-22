@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using NLog;
 using System.IO;
+using System.Xml.Linq;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace AutoStartup.Services
 {
@@ -24,6 +26,8 @@ namespace AutoStartup.Services
 
         public event Action<string, string>? ServiceOutputReceived;
 
+        public event Action<Service, ServiceStatus>? ServiceRunningStatusChanged;
+
         public static ServiceManager Instance { get; private set; }
 
         private bool Reloading { get; set; } = false;
@@ -37,13 +41,24 @@ namespace AutoStartup.Services
             lock (serviceMaintenanceLock)
             {
                 _services.Add(service);
-                service.OutputReceived += (name, output) => ServiceOutputReceived?.Invoke(name, output);
+                service.OutputReceived += Service_OutputReceived;
+                service.StatusChanged += Service_StatusChanged;
                 if (add)
                 {
                     _logger.Info($"服务 {service.Name} 已被添加, 详情：{service}.");
                 }
                 return true;
             }
+        }
+
+        private void Service_StatusChanged(Service service, ServiceStatus status)
+        {
+            ServiceRunningStatusChanged?.Invoke(service, status);
+        }
+
+        private void Service_OutputReceived(string name, string output)
+        {
+            ServiceOutputReceived?.Invoke(name, output);
         }
 
         public IEnumerable<Service> ListServices()
@@ -102,7 +117,8 @@ namespace AutoStartup.Services
                 if (item != null)
                 {
                     _services.Remove(item);
-                    item.OutputReceived -= (n, o) => ServiceOutputReceived?.Invoke(n, o);
+                    item.OutputReceived -= Service_OutputReceived;
+                    item.StatusChanged -= Service_StatusChanged;
                     _logger.Info($"服务 {name} 已被移除.");
                     return true;
                 }

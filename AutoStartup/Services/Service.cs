@@ -79,7 +79,7 @@ namespace AutoStartup.Services
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public event Action<ServiceStatus>? StatusChanged;
+        public event Action<Service, ServiceStatus>? StatusChanged;
 
         public string Arguments { get; set; }
 
@@ -134,7 +134,7 @@ namespace AutoStartup.Services
             set
             {
                 _serviceStatus = value;
-                StatusChanged?.Invoke(_serviceStatus);
+                StatusChanged?.Invoke(this, _serviceStatus);
             }
         }
 

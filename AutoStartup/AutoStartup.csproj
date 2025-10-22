@@ -10,9 +10,9 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <ApplicationIcon>ico.ico</ApplicationIcon>
     <Copyright>github.com/Hellobaka</Copyright>
-    <FileVersion>2.2.0</FileVersion>
-    <AssemblyVersion>2.2.0</AssemblyVersion>
-    <Version>2.2.0</Version>
+    <FileVersion>2.3.0</FileVersion>
+    <AssemblyVersion>2.3.0</AssemblyVersion>
+    <Version>2.3.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
