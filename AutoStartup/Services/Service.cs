@@ -235,6 +235,7 @@ namespace AutoStartup.Services
             StartDelayMs = service.StartDelayMs;
             AutoRestart = service.AutoRestart;
             RestartDelayMs = service.RestartDelayMs;
+            LogConsoleOutput = service.LogConsoleOutput;
             InMemoryLogLimit = service.InMemoryLogLimit;
             EnvironmentVariables = new(service.EnvironmentVariables.ToArray());
             OutputEncoding = service.OutputEncoding;
