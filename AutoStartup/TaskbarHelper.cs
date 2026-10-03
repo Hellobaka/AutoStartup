@@ -1,5 +1,6 @@
 ﻿using AutoStartup.Services;
 using System.IO;
+using NLog;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -62,6 +63,7 @@ namespace AutoStartup
                     }
                     catch (Exception ex)
                     {
+                        LogManager.GetLogger("Diagnostics").Error(ex, "托盘事件循环异常");
                         MessageBox.Show($"托盘事件循环过程发生异常：{ex}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 });
@@ -98,6 +100,8 @@ namespace AutoStartup
                 {
                     await ServiceManager.Instance.StopAllAsync();
                 }
+                LogManager.GetLogger("Diagnostics").Info("用户确认从托盘菜单退出 AutoStartup");
+                LogManager.Flush();
                 Environment.Exit(0);
             }
         }

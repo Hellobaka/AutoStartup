@@ -24,8 +24,8 @@ namespace AutoStartup
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainWindowViewModel();
             UIDispatcher = Dispatcher.CurrentDispatcher;
+            DataContext = new MainWindowViewModel();
             ExtraServiceButtonMenu.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(ExtraServiceButtonMenuItem_Click));
         }
 

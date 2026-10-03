@@ -1,5 +1,6 @@
 ﻿using AutoStartup.Services;
 using Microsoft.Win32;
+using NLog;
 using System.IO;
 using System.Security.Principal;
 using System.Text;
@@ -12,6 +13,8 @@ namespace AutoStartup
     /// </summary>
     public partial class App : System.Windows.Application
     {
+        private static readonly Logger Logger = LogManager.GetLogger("Diagnostics");
+
         [STAThread]
         public static async Task Main(string[] args)
         {
@@ -29,6 +32,14 @@ namespace AutoStartup
             try
             {
                 Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                LogService.RegisterServiceLogger("Diagnostics");
+                AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+                {
+                    Logger.Fatal(e.ExceptionObject as Exception, "未处理异常，IsTerminating={0}", e.IsTerminating);
+                    LogManager.Flush();
+                };
+                Logger.Info("AutoStartup 启动，PID={0}，SessionId={1}", Environment.ProcessId,
+                    System.Diagnostics.Process.GetCurrentProcess().SessionId);
                 Shared.IsElevated = IsElevated();
                 Shared.Maintenance = args.Length == 0;
 
@@ -62,7 +73,10 @@ namespace AutoStartup
 
                 Shared.QuitSignal.WaitOne();
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "AutoStartup 主流程异常");
+            }
             finally
             {
                 Shared.AppMutex.ReleaseMutex();
@@ -77,7 +91,7 @@ namespace AutoStartup
                 RunApp();
                 return;
             }
-            Shared.WPFInstance.Dispatcher.BeginInvoke(new Action(() =>
+            UiDispatch.Post(Shared.WPFInstance.Dispatcher, () =>
             {
                 var window = Shared.WPFInstance.MainWindow;
                 if (window == null)
@@ -85,7 +99,7 @@ namespace AutoStartup
                     return;
                 }
                 window.Show();
-            }));
+            }, "IPC 显示窗口");
         }
 
         private static void TaskbarHelper_OnTaskbarDoubleClicked()
@@ -95,7 +109,7 @@ namespace AutoStartup
                 RunApp();
                 return;
             }
-            Shared.WPFInstance.Dispatcher.BeginInvoke(new Action(() =>
+            UiDispatch.Post(Shared.WPFInstance.Dispatcher, () =>
             {
                 var window = Shared.WPFInstance.MainWindow;
                 if (window == null)
@@ -103,7 +117,7 @@ namespace AutoStartup
                     return;
                 }
                 window.Show();
-            }));
+            }, "托盘显示窗口");
         }
 
         private static void RunApp()
@@ -121,12 +135,18 @@ namespace AutoStartup
                         StartupUri = new("pack://application:,,,/MainWindow.xaml"),
                     };
                     app.InitializeComponent();
+                    app.SessionEnding += (_, e) => Logger.Warn("Windows 会话结束：{0}", e.ReasonSessionEnding);
+                    app.Exit += (_, e) => Logger.Warn("WPF 退出：ExitCode={0}", e.ApplicationExitCode);
+                    app.Dispatcher.ShutdownStarted += (_, _) => Logger.Warn("WPF Dispatcher 开始关闭");
+                    app.Dispatcher.ShutdownFinished += (_, _) => Logger.Warn("WPF Dispatcher 已关闭");
+                    app.DispatcherUnhandledException += (_, e) => Logger.Error(e.Exception, "WPF 未处理异常");
 
                     Shared.WPFInstance = app;
                     Shared.WPFInstance.Run();
                 }
                 catch (Exception ex)
                 {
+                    Logger.Error(ex, "WPF 事件循环异常");
                     System.Windows.MessageBox.Show($"WPF 事件循环过程发生异常：{ex}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             });

@@ -45,6 +45,7 @@ namespace AutoStartup.ViewModel
 
         public ServiceViewModel(Service svc, Action<ServiceViewModel> onDelete)
         {
+            var dispatcher = System.Windows.Threading.Dispatcher.CurrentDispatcher;
             Service = svc;
             StartCommand = new RelayCommand(async _ => await Service.StartAsync(false));
             StopCommand = new RelayCommand(async _ => await Service.StopAsync());
@@ -56,11 +57,14 @@ namespace AutoStartup.ViewModel
             // 状态变化通知
             Service.StatusChanged += (_, s) =>
             {
-                OnPropertyChanged(nameof(Status));
-                OnPropertyChanged(nameof(Running));
-                OnPropertyChanged(nameof(Stopped));
-                OnPropertyChanged(nameof(Restarting));
-                OnPropertyChanged(nameof(Error));
+                UiDispatch.Post(dispatcher, () =>
+                {
+                    OnPropertyChanged(nameof(Status));
+                    OnPropertyChanged(nameof(Running));
+                    OnPropertyChanged(nameof(Stopped));
+                    OnPropertyChanged(nameof(Restarting));
+                    OnPropertyChanged(nameof(Error));
+                }, $"服务 {Name} 状态更新");
             };
             foreach (var item in Service.InMemoryOperationLogs)
             {
@@ -73,26 +77,26 @@ namespace AutoStartup.ViewModel
 
             Service.OperationReceived += (n, line) =>
             {
-                MainWindow.UIDispatcher.Invoke(() =>
+                UiDispatch.Post(dispatcher, () =>
                 {
                     OperationLogs.Add((GetLogLevel(line), line));
                     while (OperationLogs.Count > Service.InMemoryLogLimit)
                     {
                         OperationLogs.RemoveAt(0);
                     }
-                });
+                }, $"服务 {Name} 操作日志更新");
             };
 
             Service.OutputReceived += (n, line) =>
             {
-                MainWindow.UIDispatcher.Invoke(() =>
+                UiDispatch.Post(dispatcher, () =>
                 {
                     ConsoleOutputs.Add(line);
                     while (ConsoleOutputs.Count > Service.InMemoryLogLimit)
                     {
                         ConsoleOutputs.RemoveAt(0);
                     }
-                });
+                }, $"服务 {Name} 控制台输出更新");
             };
         }
 
